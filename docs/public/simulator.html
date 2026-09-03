@@ -1,736 +1,1148 @@
 <!DOCTYPE html>
-<html lang="pt-BR" class="dark">
+<html lang="pt-BR">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>NexoQuiz — Painel de Acompanhamento em Tempo Real</title>
+  <title>NexoQuiz — Simulador Interativo de Questões Jurídicas</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
   <style>
     :root {
-      --bg-base: #0a0c10;
-      --bg-surface: #11141b;
-      --bg-card: #181c26;
-      --border: #232a3b;
-      --text-main: #f0f3f8;
-      --text-muted: #8b9bb4;
-      --accent: #38bdf8;
-      --accent-glow: rgba(56, 189, 248, 0.15);
-      --success: #10b981;
-      --success-glow: rgba(16, 185, 129, 0.15);
-      --warning: #f59e0b;
-      --font-sans: 'Inter', system-ui, -apple-system, sans-serif;
-      --font-mono: 'JetBrains Mono', monospace;
+      --bg: #f8f9fc;
+      --surface: #ffffff;
+      --border: #e2e6ef;
+      --text: #1a1d26;
+      --text-muted: #6b7280;
+      --brand: #4f46e5;
+      --brand-light: #eef2ff;
+      --brand-dark: #3730a3;
+      --success: #059669;
+      --success-bg: #ecfdf5;
+      --error: #dc2626;
+      --error-bg: #fef2f2;
+      --warning: #d97706;
+      --warning-bg: #fffbeb;
+      --radius: 12px;
+      --shadow: 0 1px 3px rgba(0,0,0,0.06), 0 1px 2px rgba(0,0,0,0.04);
+      --shadow-lg: 0 10px 25px rgba(0,0,0,0.08);
     }
 
-    * {
-      box-sizing: border-box;
-      margin: 0;
-      padding: 0;
+    [data-theme="dark"] {
+      --bg: #0f1117;
+      --surface: #1a1d2e;
+      --border: #2a2f42;
+      --text: #e8ecf4;
+      --text-muted: #8b95ad;
+      --brand: #818cf8;
+      --brand-light: #1e1b4b;
+      --brand-dark: #a5b4fc;
+      --success: #34d399;
+      --success-bg: #064e3b;
+      --error: #f87171;
+      --error-bg: #450a0a;
+      --warning: #fbbf24;
+      --warning-bg: #451a03;
+      --shadow: 0 1px 3px rgba(0,0,0,0.3);
+      --shadow-lg: 0 10px 25px rgba(0,0,0,0.4);
     }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
 
     body {
-      background-color: var(--bg-base);
-      color: var(--text-main);
-      font-family: var(--font-sans);
+      font-family: 'Inter', system-ui, sans-serif;
+      background: var(--bg);
+      color: var(--text);
       min-height: 100vh;
-      display: flex;
-      flex-direction: column;
-      overflow-x: hidden;
+      transition: background 0.3s, color 0.3s;
     }
 
-    /* Top Navigation Header */
-    header {
-      background: rgba(17, 20, 27, 0.85);
-      backdrop-filter: blur(12px);
+    /* ── Header ── */
+    .header {
+      background: var(--surface);
       border-bottom: 1px solid var(--border);
-      padding: 14px 28px;
+      padding: 16px 24px;
       display: flex;
       align-items: center;
       justify-content: space-between;
       position: sticky;
       top: 0;
       z-index: 100;
+      box-shadow: var(--shadow);
     }
 
-    .brand {
+    .header-left {
       display: flex;
       align-items: center;
       gap: 12px;
     }
 
-    .brand-badge {
-      background: linear-gradient(135deg, #0284c7, #0369a1);
-      color: #fff;
+    .header-logo {
+      font-size: 1.25rem;
       font-weight: 700;
-      font-size: 11px;
-      padding: 4px 8px;
-      border-radius: 6px;
-      letter-spacing: 0.05em;
+      color: var(--brand);
     }
 
-    .brand-title {
-      font-size: 16px;
+    .header-badge {
+      font-size: 0.7rem;
       font-weight: 600;
-      letter-spacing: -0.02em;
-    }
-
-    .brand-subtitle {
-      font-size: 12px;
-      color: var(--text-muted);
-    }
-
-    .header-status {
-      display: flex;
-      align-items: center;
-      gap: 16px;
-    }
-
-    .status-pill {
-      display: inline-flex;
-      align-items: center;
-      gap: 8px;
-      background: var(--success-glow);
-      border: 1px solid rgba(16, 185, 129, 0.3);
-      color: #34d399;
-      padding: 5px 12px;
+      padding: 3px 8px;
       border-radius: 20px;
-      font-size: 12px;
-      font-weight: 500;
-    }
-
-    .status-dot {
-      width: 7px;
-      height: 7px;
-      background-color: #10b981;
-      border-radius: 50%;
-      box-shadow: 0 0 8px #10b981;
-      animation: pulse 2s infinite;
-    }
-
-    @keyframes pulse {
-      0%, 100% { opacity: 1; transform: scale(1); }
-      50% { opacity: 0.5; transform: scale(0.85); }
-    }
-
-    /* Main Layout */
-    .container {
-      display: grid;
-      grid-template-columns: 340px 1fr;
-      flex: 1;
-      height: calc(100vh - 65px);
-    }
-
-    /* Sidebar - Roadmap & Status */
-    .sidebar {
-      background-color: var(--bg-surface);
-      border-right: 1px solid var(--border);
-      padding: 20px;
-      overflow-y: auto;
-      display: flex;
-      flex-direction: column;
-      gap: 24px;
-    }
-
-    .section-title {
-      font-size: 11px;
+      background: var(--brand-light);
+      color: var(--brand);
       text-transform: uppercase;
-      letter-spacing: 0.08em;
-      color: var(--text-muted);
-      font-weight: 600;
-      margin-bottom: 12px;
+      letter-spacing: 0.5px;
+    }
+
+    .header-right {
       display: flex;
       align-items: center;
-      justify-content: space-between;
+      gap: 12px;
     }
 
-    .phase-list {
-      display: flex;
-      flex-direction: column;
-      gap: 8px;
-    }
-
-    .phase-item {
-      background: var(--bg-card);
+    .theme-toggle {
+      background: var(--bg);
       border: 1px solid var(--border);
       border-radius: 8px;
-      padding: 10px 12px;
-      display: flex;
-      align-items: flex-start;
-      gap: 10px;
-      font-size: 12px;
-      transition: all 0.2s ease;
-    }
-
-    .phase-item.completed {
-      border-color: rgba(16, 185, 129, 0.3);
-      background: rgba(16, 185, 129, 0.04);
-    }
-
-    .phase-item.current {
-      border-color: rgba(56, 189, 248, 0.5);
-      background: rgba(56, 189, 248, 0.06);
-      box-shadow: 0 0 16px var(--accent-glow);
-    }
-
-    .phase-badge {
-      font-family: var(--font-mono);
-      font-size: 10px;
-      font-weight: 600;
-      padding: 2px 6px;
-      border-radius: 4px;
-      flex-shrink: 0;
-    }
-
-    .phase-item.completed .phase-badge {
-      background: #065f46;
-      color: #6ee7b7;
-    }
-
-    .phase-item.current .phase-badge {
-      background: #075985;
-      color: #7dd3fc;
-    }
-
-    .phase-item.pending .phase-badge {
-      background: #232a3b;
-      color: #94a3b8;
-    }
-
-    .phase-info {
-      flex: 1;
-    }
-
-    .phase-name {
-      font-weight: 500;
-      color: var(--text-main);
-      margin-bottom: 2px;
-    }
-
-    .phase-desc {
-      font-size: 11px;
-      color: var(--text-muted);
-      line-height: 1.3;
-    }
-
-    /* Git Meta Card */
-    .meta-card {
-      background: var(--bg-card);
-      border: 1px solid var(--border);
-      border-radius: 8px;
-      padding: 12px;
-      font-size: 11px;
-      display: flex;
-      flex-direction: column;
-      gap: 6px;
-    }
-
-    .meta-row {
-      display: flex;
-      justify-content: space-between;
-      gap: 8px;
-    }
-
-    .meta-label {
-      color: var(--text-muted);
-    }
-
-    .meta-val {
-      font-family: var(--font-mono);
-      color: var(--accent);
-      text-align: right;
-      word-break: break-all;
-    }
-
-    /* Main Area - Live Preview & Tabs */
-    .main-stage {
-      display: flex;
-      flex-direction: column;
-      background: var(--bg-base);
-      overflow: hidden;
-    }
-
-    .tabs-bar {
-      display: flex;
-      gap: 4px;
-      padding: 12px 20px 0 20px;
-      border-bottom: 1px solid var(--border);
-      background: var(--bg-surface);
-    }
-
-    .tab-btn {
-      background: transparent;
-      border: none;
-      color: var(--text-muted);
-      padding: 8px 16px;
-      font-size: 13px;
-      font-weight: 500;
+      padding: 6px 10px;
       cursor: pointer;
-      border-bottom: 2px solid transparent;
-      transition: all 0.2s ease;
-      font-family: var(--font-sans);
+      font-size: 1rem;
+      color: var(--text);
+      transition: all 0.2s;
     }
 
-    .tab-btn:hover {
-      color: var(--text-main);
-    }
+    .theme-toggle:hover { border-color: var(--brand); }
 
-    .tab-btn.active {
-      color: var(--accent);
-      border-bottom-color: var(--accent);
-    }
-
-    .tab-content {
-      flex: 1;
-      display: none;
-      overflow: hidden;
-      position: relative;
-    }
-
-    .tab-content.active {
+    /* ── Mode Switcher ── */
+    .mode-switcher {
       display: flex;
-      flex-direction: column;
-    }
-
-    /* Live Preview Iframe */
-    .preview-frame-wrap {
-      flex: 1;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      padding: 24px;
-      background: radial-gradient(circle at center, #141822 0%, #0a0c10 100%);
-      overflow: auto;
-    }
-
-    .device-shell {
-      width: 100%;
-      max-width: 900px;
-      height: 100%;
-      max-height: 800px;
-      background: #000;
-      border-radius: 12px;
+      background: var(--bg);
       border: 1px solid var(--border);
-      box-shadow: 0 20px 50px rgba(0, 0, 0, 0.6);
-      overflow: hidden;
-      display: flex;
-      flex-direction: column;
+      border-radius: 10px;
+      padding: 3px;
+      gap: 2px;
     }
 
-    .device-bar {
-      background: #11141b;
-      padding: 10px 16px;
+    .mode-btn {
+      padding: 8px 16px;
+      border: none;
+      border-radius: 8px;
+      font-size: 0.8rem;
+      font-weight: 600;
+      cursor: pointer;
+      background: transparent;
+      color: var(--text-muted);
+      transition: all 0.2s;
+      font-family: inherit;
+    }
+
+    .mode-btn.active {
+      background: var(--brand);
+      color: white;
+      box-shadow: 0 2px 8px rgba(79, 70, 229, 0.3);
+    }
+
+    .mode-btn:not(.active):hover {
+      color: var(--text);
+      background: var(--surface);
+    }
+
+    /* ── Main Container ── */
+    .container {
+      max-width: 800px;
+      margin: 0 auto;
+      padding: 24px;
+    }
+
+    /* ── Progress Bar ── */
+    .progress-section {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 16px 20px;
+      margin-bottom: 20px;
+      box-shadow: var(--shadow);
+    }
+
+    .progress-header {
       display: flex;
-      align-items: center;
       justify-content: space-between;
-      border-bottom: 1px solid var(--border);
+      align-items: center;
+      margin-bottom: 10px;
     }
 
-    .device-dots {
+    .progress-label {
+      font-size: 0.8rem;
+      font-weight: 600;
+      color: var(--text-muted);
+    }
+
+    .progress-counter {
+      font-size: 0.85rem;
+      font-weight: 700;
+      color: var(--brand);
+    }
+
+    .progress-bar {
+      height: 6px;
+      background: var(--bg);
+      border-radius: 3px;
+      overflow: hidden;
+    }
+
+    .progress-fill {
+      height: 100%;
+      background: linear-gradient(90deg, var(--brand), var(--brand-dark));
+      border-radius: 3px;
+      transition: width 0.5s ease;
+    }
+
+    .progress-dots {
       display: flex;
       gap: 6px;
+      margin-top: 10px;
+      justify-content: center;
     }
 
-    .dot {
+    .progress-dot {
       width: 10px;
       height: 10px;
       border-radius: 50%;
-    }
-    .dot-red { background: #ef4444; }
-    .dot-yellow { background: #f59e0b; }
-    .dot-green { background: #10b981; }
-
-    .device-title {
-      font-size: 11px;
-      font-family: var(--font-mono);
-      color: var(--text-muted);
+      border: 2px solid var(--border);
+      background: transparent;
+      cursor: pointer;
+      transition: all 0.2s;
     }
 
-    .device-iframe {
-      flex: 1;
-      width: 100%;
-      border: none;
-      background: #ffffff;
-    }
+    .progress-dot.current { border-color: var(--brand); background: var(--brand); }
+    .progress-dot.answered { border-color: var(--success); background: var(--success); }
+    .progress-dot.wrong { border-color: var(--error); background: var(--error); }
 
-    /* Architecture View */
-    .arch-view {
-      padding: 32px;
-      overflow-y: auto;
-      max-width: 1000px;
-      margin: 0 auto;
-      width: 100%;
-      display: flex;
-      flex-direction: column;
-      gap: 24px;
-    }
-
-    .card {
-      background: var(--bg-surface);
-      border: 1px solid var(--border);
-      border-radius: 10px;
-      padding: 20px;
-    }
-
-    .card-title {
-      font-size: 14px;
+    /* ── Timer (Prova mode) ── */
+    .timer {
+      display: none;
+      align-items: center;
+      gap: 6px;
+      font-size: 0.85rem;
       font-weight: 600;
+      color: var(--text);
+      font-variant-numeric: tabular-nums;
+    }
+
+    .timer.visible { display: flex; }
+    .timer-icon { font-size: 1rem; }
+
+    /* ── Question Card ── */
+    .question-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 28px;
+      margin-bottom: 20px;
+      box-shadow: var(--shadow);
+    }
+
+    .question-meta {
+      display: flex;
+      gap: 8px;
+      margin-bottom: 16px;
+      flex-wrap: wrap;
+    }
+
+    .question-tag {
+      font-size: 0.7rem;
+      font-weight: 600;
+      padding: 3px 10px;
+      border-radius: 20px;
+      text-transform: uppercase;
+      letter-spacing: 0.3px;
+    }
+
+    .tag-subject { background: var(--brand-light); color: var(--brand); }
+    .tag-difficulty-hard { background: var(--error-bg); color: var(--error); }
+    .tag-difficulty-medium { background: var(--warning-bg); color: var(--warning); }
+    .tag-difficulty-easy { background: var(--success-bg); color: var(--success); }
+    .tag-type { background: var(--bg); color: var(--text-muted); border: 1px solid var(--border); }
+
+    .question-number {
+      font-size: 0.8rem;
+      font-weight: 700;
+      color: var(--brand);
       margin-bottom: 12px;
-      color: var(--accent);
+    }
+
+    .question-stem {
+      font-size: 0.95rem;
+      line-height: 1.7;
+      color: var(--text);
+      margin-bottom: 24px;
+    }
+
+    /* ── Alternatives ── */
+    .alternatives { display: flex; flex-direction: column; gap: 10px; }
+
+    .alternative {
+      display: flex;
+      align-items: flex-start;
+      gap: 14px;
+      padding: 14px 18px;
+      border: 2px solid var(--border);
+      border-radius: 10px;
+      cursor: pointer;
+      transition: all 0.2s;
+      background: var(--surface);
+    }
+
+    .alternative:hover:not(.disabled) {
+      border-color: var(--brand);
+      background: var(--brand-light);
+    }
+
+    .alternative.selected {
+      border-color: var(--brand);
+      background: var(--brand-light);
+    }
+
+    .alternative.correct {
+      border-color: var(--success);
+      background: var(--success-bg);
+    }
+
+    .alternative.wrong {
+      border-color: var(--error);
+      background: var(--error-bg);
+    }
+
+    .alternative.disabled { cursor: default; opacity: 0.7; }
+    .alternative.disabled.correct { opacity: 1; }
+    .alternative.disabled.wrong { opacity: 1; }
+
+    .alt-letter {
+      width: 32px;
+      height: 32px;
+      border-radius: 8px;
       display: flex;
       align-items: center;
-      gap: 8px;
-    }
-
-    .adr-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-      gap: 12px;
-    }
-
-    .adr-box {
-      background: var(--bg-card);
-      border: 1px solid var(--border);
-      padding: 12px;
-      border-radius: 6px;
-      font-size: 12px;
-    }
-
-    .adr-box strong {
-      color: #e2e8f0;
-      display: block;
-      margin-bottom: 4px;
-    }
-
-    .adr-box p {
+      justify-content: center;
+      font-weight: 700;
+      font-size: 0.85rem;
+      background: var(--bg);
       color: var(--text-muted);
-      line-height: 1.4;
+      border: 1px solid var(--border);
+      flex-shrink: 0;
+      transition: all 0.2s;
+    }
+
+    .alternative.selected .alt-letter {
+      background: var(--brand);
+      color: white;
+      border-color: var(--brand);
+    }
+
+    .alternative.correct .alt-letter {
+      background: var(--success);
+      color: white;
+      border-color: var(--success);
+    }
+
+    .alternative.wrong .alt-letter {
+      background: var(--error);
+      color: white;
+      border-color: var(--error);
+    }
+
+    .alt-text {
+      font-size: 0.9rem;
+      line-height: 1.6;
+      padding-top: 4px;
+    }
+
+    /* ── Confirm Button ── */
+    .confirm-section {
+      display: flex;
+      justify-content: flex-end;
+      gap: 12px;
+      margin-top: 20px;
+    }
+
+    .btn {
+      padding: 12px 28px;
+      border: none;
+      border-radius: 10px;
+      font-size: 0.85rem;
+      font-weight: 700;
+      cursor: pointer;
+      transition: all 0.2s;
+      font-family: inherit;
+    }
+
+    .btn-primary {
+      background: var(--brand);
+      color: white;
+      box-shadow: 0 2px 8px rgba(79, 70, 229, 0.3);
+    }
+
+    .btn-primary:hover { transform: translateY(-1px); box-shadow: 0 4px 12px rgba(79, 70, 229, 0.4); }
+    .btn-primary:disabled { opacity: 0.4; cursor: not-allowed; transform: none; box-shadow: none; }
+
+    .btn-secondary {
+      background: var(--bg);
+      color: var(--text);
+      border: 1px solid var(--border);
+    }
+
+    .btn-secondary:hover { border-color: var(--brand); color: var(--brand); }
+
+    /* ── Correction Panel ── */
+    .correction-panel {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      overflow: hidden;
+      margin-bottom: 20px;
+      box-shadow: var(--shadow);
+      display: none;
+    }
+
+    .correction-panel.visible { display: block; }
+
+    .correction-header {
+      padding: 18px 24px;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      font-weight: 700;
+      font-size: 0.95rem;
+    }
+
+    .correction-header.correct-header {
+      background: var(--success-bg);
+      color: var(--success);
+      border-bottom: 1px solid var(--success);
+    }
+
+    .correction-header.wrong-header {
+      background: var(--error-bg);
+      color: var(--error);
+      border-bottom: 1px solid var(--error);
+    }
+
+    .correction-body { padding: 20px 24px; }
+
+    .correction-section {
+      margin-bottom: 16px;
+    }
+
+    .correction-section:last-child { margin-bottom: 0; }
+
+    .correction-label {
+      font-size: 0.75rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      color: var(--text-muted);
+      margin-bottom: 6px;
+    }
+
+    .correction-text {
+      font-size: 0.88rem;
+      line-height: 1.7;
+      color: var(--text);
+    }
+
+    /* ── Accordion (Distratores) ── */
+    .accordion {
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      margin-top: 12px;
+      overflow: hidden;
+    }
+
+    .accordion-header {
+      padding: 12px 16px;
+      background: var(--bg);
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      font-size: 0.82rem;
+      font-weight: 600;
+      color: var(--text-muted);
+      transition: all 0.2s;
+    }
+
+    .accordion-header:hover { color: var(--text); background: var(--surface); }
+
+    .accordion-arrow {
+      transition: transform 0.2s;
+      font-size: 0.7rem;
+    }
+
+    .accordion.open .accordion-arrow { transform: rotate(180deg); }
+
+    .accordion-body {
+      max-height: 0;
+      overflow: hidden;
+      transition: max-height 0.3s ease;
+    }
+
+    .accordion.open .accordion-body { max-height: 500px; }
+
+    .accordion-content {
+      padding: 14px 16px;
+      font-size: 0.85rem;
+      line-height: 1.7;
+      color: var(--text);
+      border-top: 1px solid var(--border);
+    }
+
+    /* ── Results Screen ── */
+    .results-screen {
+      display: none;
+      text-align: center;
+    }
+
+    .results-screen.visible { display: block; }
+
+    .results-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 40px;
+      box-shadow: var(--shadow-lg);
+    }
+
+    .results-title {
+      font-size: 1.3rem;
+      font-weight: 700;
+      margin-bottom: 8px;
+    }
+
+    .results-subtitle {
+      font-size: 0.9rem;
+      color: var(--text-muted);
+      margin-bottom: 32px;
+    }
+
+    .results-score {
+      font-size: 3.5rem;
+      font-weight: 800;
+      color: var(--brand);
+      margin-bottom: 8px;
+    }
+
+    .results-fraction {
+      font-size: 1rem;
+      color: var(--text-muted);
+      margin-bottom: 32px;
+    }
+
+    .results-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 16px;
+      margin-bottom: 32px;
+    }
+
+    .result-stat {
+      background: var(--bg);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 16px;
+    }
+
+    .result-stat-value {
+      font-size: 1.5rem;
+      font-weight: 700;
+    }
+
+    .result-stat-label {
+      font-size: 0.75rem;
+      color: var(--text-muted);
+      margin-top: 4px;
+    }
+
+    .stat-correct { color: var(--success); }
+    .stat-wrong { color: var(--error); }
+    .stat-time { color: var(--brand); }
+
+    .btn-restart {
+      margin-top: 8px;
+    }
+
+    /* ── Footer Notice ── */
+    .demo-notice {
+      text-align: center;
+      padding: 20px;
+      font-size: 0.78rem;
+      color: var(--text-muted);
+      line-height: 1.6;
+    }
+
+    .demo-notice a {
+      color: var(--brand);
+      text-decoration: none;
+      font-weight: 600;
+    }
+
+    .demo-notice a:hover { text-decoration: underline; }
+
+    /* ── Responsive ── */
+    @media (max-width: 640px) {
+      .container { padding: 16px; }
+      .question-card { padding: 20px; }
+      .header { padding: 12px 16px; }
+      .mode-btn { padding: 6px 12px; font-size: 0.75rem; }
+      .results-grid { grid-template-columns: 1fr; }
     }
   </style>
 </head>
 <body>
 
-  <!-- Top Header -->
-  <header>
-    <div class="brand">
-      <div class="brand-badge">NEXOQUIZ</div>
-      <div>
-        <div class="brand-title">Painel de Acompanhamento em Tempo Real</div>
-        <div class="brand-subtitle">Engine de Questões Jurídicas para ChatGPT MCP & Standalone</div>
-      </div>
+  <!-- Header -->
+  <header class="header">
+    <div class="header-left">
+      <span class="header-logo">⚖️ NexoQuiz</span>
+      <span class="header-badge">Demo Interativa</span>
     </div>
-    <div class="header-status">
-      <div class="status-pill">
-        <span class="status-dot"></span>
-        <span>Versão 1.0 Concluída — 100% Homologado</span>
+    <div class="header-right">
+      <div class="timer" id="timer">
+        <span class="timer-icon">⏱</span>
+        <span id="timer-display">00:00</span>
       </div>
+      <div class="mode-switcher">
+        <button class="mode-btn active" onclick="setMode('estudo')">📖 Estudo</button>
+        <button class="mode-btn" onclick="setMode('prova')">📝 Prova</button>
+      </div>
+      <button class="theme-toggle" onclick="toggleTheme()" title="Alternar tema">🌓</button>
     </div>
   </header>
 
-  <!-- Container -->
   <div class="container">
-    
-    <!-- Sidebar / Roadmap -->
-    <aside class="sidebar">
-      <div>
-        <div class="section-title">
-          <span>Metadados do Repositório</span>
-        </div>
-        <div class="meta-card">
-          <div class="meta-row">
-            <span class="meta-label">Repositório:</span>
-            <span class="meta-val">junior-aguiar-eng/NexoQuest</span>
-          </div>
-          <div class="meta-row">
-            <span class="meta-label">Branch Ativa:</span>
-            <span class="meta-val">foundation/nexoquiz-v1</span>
-          </div>
-          <div class="meta-row">
-            <span class="meta-label">Upstream:</span>
-            <span class="meta-val">bassimeledath/quizhp-mcp</span>
-          </div>
-          <div class="meta-row">
-            <span class="meta-label">Baseline Commit:</span>
-            <span class="meta-val">3fa1350</span>
-          </div>
-          <div class="meta-row">
-            <span class="meta-label">Testes Unitários:</span>
-            <span class="meta-val" style="color:#34d399;">54/54 Passando ✓</span>
-          </div>
-        </div>
+
+    <!-- Progress -->
+    <div class="progress-section" id="progress-section">
+      <div class="progress-header">
+        <span class="progress-label" id="progress-mode-label">MODO ESTUDO</span>
+        <span class="progress-counter" id="progress-counter">Questão 1 de 5</span>
+      </div>
+      <div class="progress-bar">
+        <div class="progress-fill" id="progress-fill" style="width: 20%"></div>
+      </div>
+      <div class="progress-dots" id="progress-dots"></div>
+    </div>
+
+    <!-- Question Area -->
+    <div id="quiz-area">
+      <div class="question-card" id="question-card">
+        <div class="question-meta" id="question-meta"></div>
+        <div class="question-number" id="question-number"></div>
+        <div class="question-stem" id="question-stem"></div>
+        <div class="alternatives" id="alternatives"></div>
       </div>
 
-      <div>
-        <div class="section-title">
-          <span>Progresso de Fases</span>
-          <span style="color:#34d399;">18 / 18 (100%) ✓</span>
-        </div>
-        <div class="phase-list">
-          
-          <div class="phase-item completed">
-            <span class="phase-badge">FASE 0</span>
-            <div class="phase-info">
-              <div class="phase-name">Clone & Baseline Upstream ✓</div>
-              <div class="phase-desc">Remotes configurados e baseline congelado.</div>
-            </div>
-          </div>
-
-          <div class="phase-item completed">
-            <span class="phase-badge">FASE 1</span>
-            <div class="phase-info">
-              <div class="phase-name">Guardrails & ADRs ✓</div>
-              <div class="phase-desc">AGENTS.md, ARCHITECTURE.md, ADR-001 a 010.</div>
-            </div>
-          </div>
-
-          <div class="phase-item completed">
-            <span class="phase-badge">FASE 2</span>
-            <div class="phase-info">
-              <div class="phase-name">QuestionPlayer Sóbrio ✓</div>
-              <div class="phase-desc">Substituição do GameRuntime por QuestionPlayer.</div>
-            </div>
-          </div>
-
-          <div class="phase-item completed">
-            <span class="phase-badge">FASE 3</span>
-            <div class="phase-info">
-              <div class="phase-name">Contratos de Domínio + Zod ✓</div>
-              <div class="phase-desc">Primitivos, UMT, QuizPlan, QuestionPublic/Internal.</div>
-            </div>
-          </div>
-
-          <div class="phase-item completed">
-            <span class="phase-badge">FASE 4</span>
-            <div class="phase-info">
-              <div class="phase-name">Validadores FGV & Bloco ✓</div>
-              <div class="phase-desc">Regras de proporção (3 hard, 1 med, 1 easy) e rotação.</div>
-            </div>
-          </div>
-
-          <div class="phase-item completed">
-            <span class="phase-badge">FASE 5</span>
-            <div class="phase-info">
-              <div class="phase-name">Engine de Sessão no Frontend ✓</div>
-              <div class="phase-desc">Zustand stores, modos Estudo e Prova, atalhos.</div>
-            </div>
-          </div>
-
-          <div class="phase-item completed">
-            <span class="phase-badge">FASE 6</span>
-            <div class="phase-info">
-              <div class="phase-name">Correção Jurídica & Accordions ✓</div>
-              <div class="phase-desc">CorrectionPanel, diagnóstico e distratores em accordions.</div>
-            </div>
-          </div>
-
-          <div class="phase-item completed">
-            <span class="phase-badge">FASE 7</span>
-            <div class="phase-info">
-              <div class="phase-name">Biblioteca Markdown & FTS5 ✓</div>
-              <div class="phase-desc">Parser AST, frontmatter Zod e índice SQLite FTS5.</div>
-            </div>
-          </div>
-
-          <div class="phase-item completed">
-            <span class="phase-badge">FASE 8</span>
-            <div class="phase-info">
-              <div class="phase-name">Tools MCP de Biblioteca ✓</div>
-              <div class="phase-desc">library_list_materials, get_outline, search, read_sections.</div>
-            </div>
-          </div>
-
-          <div class="phase-item completed">
-            <span class="phase-badge">FASE 9</span>
-            <div class="phase-info">
-              <div class="phase-name">Protocolo UMT & QuizPlan ✓</div>
-              <div class="phase-desc">Validação stateless de planos gerados pelo modelo.</div>
-            </div>
-          </div>
-
-          <div class="phase-item completed">
-            <span class="phase-badge">FASE 10</span>
-            <div class="phase-info">
-              <div class="phase-name">quiz_render & Token Cifrado ✓</div>
-              <div class="phase-desc">opaqueGradingToken (AES-GCM) sem vazar gabarito.</div>
-            </div>
-          </div>
-
-          <div class="phase-item completed">
-            <span class="phase-badge">FASE 11</span>
-            <div class="phase-info">
-              <div class="phase-name">quiz_grade_answer ✓</div>
-              <div class="phase-desc">Correção stateless e emissão de feedback pedagógico.</div>
-            </div>
-          </div>
-
-          <div class="phase-item completed">
-            <span class="phase-badge">FASE 12</span>
-            <div class="phase-info">
-              <div class="phase-name">Integração de widgetState ✓</div>
-              <div class="phase-desc">Persistência e sincronização de respostas no ChatGPT.</div>
-            </div>
-          </div>
-
-          <div class="phase-item completed">
-            <span class="phase-badge">FASE 13</span>
-            <div class="phase-info">
-              <div class="phase-name">Persistência Local & Histórico SQLite ✓</div>
-              <div class="phase-desc">Sessões, tentativas e histórico para modo standalone.</div>
-            </div>
-          </div>
-
-          <div class="phase-item completed">
-            <span class="phase-badge">FASE 14</span>
-            <div class="phase-info">
-              <div class="phase-name">Relatório Final e Revisão ✓</div>
-              <div class="phase-desc">Relatório analítico de erros, filtros e diagnóstico por tópico.</div>
-            </div>
-          </div>
-
-          <div class="phase-item completed">
-            <span class="phase-badge">FASE 15</span>
-            <div class="phase-info">
-              <div class="phase-name">Limpeza do Legado QuizHP ✓</div>
-              <div class="phase-desc">Servidor canônico NexoQuiz e desacoplamento de gamificação.</div>
-            </div>
-          </div>
-
-          <div class="phase-item completed">
-            <span class="phase-badge">FASE 16</span>
-            <div class="phase-info">
-              <div class="phase-name">Hardening do MCP e Widget ✓</div>
-              <div class="phase-desc">Segurança, sanitização CSP, limites de payload e robustez.</div>
-            </div>
-          </div>
-
-          <div class="phase-item completed">
-            <span class="phase-badge">FASE 17</span>
-            <div class="phase-info">
-              <div class="phase-name">Integração Real no ChatGPT ✓</div>
-              <div class="phase-desc">Deploy guide, prompt canônico do host e validação E2E.</div>
-            </div>
-          </div>
-
-          <div class="phase-item pending">
-            <span class="phase-badge">FASE 11-17</span>
-            <div class="phase-info">
-              <div class="phase-name">quiz_grade, SQLite, Hardening</div>
-              <div class="phase-desc">Correção stateless, relatório final e revisão Codex.</div>
-            </div>
-          </div>
-
-        </div>
-      </div>
-    </aside>
-
-    <!-- Main Stage -->
-    <main class="main-stage">
-      <div class="tabs-bar">
-        <button class="tab-btn active" onclick="switchTab('tab-preview')">Visualizador Interativo do Widget</button>
-        <button class="tab-btn" onclick="switchTab('tab-arch')">Arquitetura & ADRs</button>
-        <button class="tab-btn" onclick="switchTab('tab-test')">Matriz de Testes</button>
+      <div class="confirm-section" id="confirm-section">
+        <button class="btn btn-secondary" id="btn-mark" onclick="toggleMark()">🏷 Marcar para Revisão</button>
+        <button class="btn btn-primary" id="btn-confirm" onclick="confirmAnswer()" disabled>Confirmar Resposta</button>
       </div>
 
-      <!-- Tab 1: Live Widget Preview -->
-      <div id="tab-preview" class="tab-content active">
-        <div class="preview-frame-wrap">
-          <div class="device-shell">
-            <div class="device-bar">
-              <div class="device-dots">
-                <span class="dot dot-red"></span>
-                <span class="dot dot-yellow"></span>
-                <span class="dot dot-green"></span>
-              </div>
-              <div class="device-title">QuestionPlayer — dist/view/index.html</div>
-              <div style="font-size:11px; color:#38bdf8;">Visualização Direta</div>
-            </div>
-            <iframe id="widgetIframe" class="device-iframe" src="./dist/view/index.html"></iframe>
-          </div>
-        </div>
+      <!-- Correction Panel (Study Mode) -->
+      <div class="correction-panel" id="correction-panel">
+        <div class="correction-header" id="correction-header"></div>
+        <div class="correction-body" id="correction-body"></div>
       </div>
 
-      <!-- Tab 2: Architecture & ADRs -->
-      <div id="tab-arch" class="tab-content">
-        <div class="arch-view">
-          <div class="card">
-            <div class="card-title">Diretrizes Fixas e Guardrails (ADR-001 a ADR-010)</div>
-            <div class="adr-grid">
-              <div class="adr-box">
-                <strong>ADR-001 — Adaptar QuizHP</strong>
-                <p>Reaproveita MCP transport e bridge sem refatoração big-bang.</p>
-              </div>
-              <div class="adr-box">
-                <strong>ADR-002 — Não Monorepo</strong>
-                <p>Mantém estrutura simples em raiz com isolamento modular estrito.</p>
-              </div>
-              <div class="adr-box">
-                <strong>ADR-003 — Core Desacoplado</strong>
-                <p>Nenhum import de OpenAI/MCP dentro de domain, library ou quiz.</p>
-              </div>
-              <div class="adr-box">
-                <strong>ADR-004 — Sem API no Backend</strong>
-                <p>O LLM do host gera questões; servidor apenas valida e corrige.</p>
-              </div>
-              <div class="adr-box">
-                <strong>ADR-005 — Markdown Canônico</strong>
-                <p>Arquivos .md são a fonte da verdade; SQLite é apenas cache e FTS.</p>
-              </div>
-              <div class="adr-box">
-                <strong>ADR-006 — Gabarito Protegido</strong>
-                <p>QuestionPublic nunca tem gabarito; chave trafega em token AES-GCM.</p>
-              </div>
-              <div class="adr-box">
-                <strong>ADR-007 — Separação de Estados</strong>
-                <p>Estado transitório de UI separado de widgetState e SessionRepository.</p>
-              </div>
-              <div class="adr-box">
-                <strong>ADR-008 — Stateless Pro</strong>
-                <p>Fluxo do ChatGPT funciona sem exigir permissões de escrita (write/modify).</p>
-              </div>
-              <div class="adr-box">
-                <strong>ADR-009 — Validações Determinísticas</strong>
-                <p>Regras de bloco (3 hard, 1 med, 1 easy) e rotação de letras no código.</p>
-              </div>
-              <div class="adr-box">
-                <strong>ADR-010 — Git Privado</strong>
-                <p>origin = privado; upstream = público QuizHP. Push restrito a origin.</p>
-              </div>
-            </div>
-          </div>
-        </div>
+      <div class="confirm-section" id="next-section" style="display:none">
+        <button class="btn btn-primary" id="btn-next" onclick="nextQuestion()">Próxima Questão →</button>
       </div>
+    </div>
 
-      <!-- Tab 3: Test Matrix -->
-      <div id="tab-test" class="tab-content">
-        <div class="arch-view">
-          <div class="card">
-            <div class="card-title">Matriz de Validação & Cobertura</div>
-            <div style="font-size: 13px; line-height: 1.6; color: var(--text-muted);">
-              <p>A pirâmide de testes do NexoQuiz prioriza testes unitários determinísticos rápidos (Zod, validadores de bloco e crypto de gabarito), seguidos de testes de integração das MCP tools e testes visuais do QuestionPlayer.</p>
-              <br>
-              <ul style="padding-left: 20px; display: flex; flex-direction: column; gap: 8px;">
-                <li><strong style="color:var(--text-main);">TC-DOM:</strong> Schemas estritos para 5 alternativas (A-E), UMT, QuizPlan e QuestionPublic.</li>
-                <li><strong style="color:var(--text-main);">TC-SEC:</strong> Envelope cifrado com AES-GCM impedindo visualização prévia de gabarito.</li>
-                <li><strong style="color:var(--text-main);">TC-LIB:</strong> Parser de frontmatter, índice FTS5 e bloqueio de path traversal.</li>
-                <li><strong style="color:var(--text-main);">TC-UI:</strong> QuestionPlayer acessível, atalhos de teclado e accordions recolhidos.</li>
-              </ul>
-            </div>
-          </div>
-        </div>
+    <!-- Results Screen -->
+    <div class="results-screen" id="results-screen">
+      <div class="results-card">
+        <div class="results-title">Relatório de Desempenho</div>
+        <div class="results-subtitle" id="results-subtitle"></div>
+        <div class="results-score" id="results-score"></div>
+        <div class="results-fraction" id="results-fraction"></div>
+        <div class="results-grid" id="results-grid"></div>
+        <button class="btn btn-primary btn-restart" onclick="restartQuiz()">🔄 Refazer Simulado</button>
       </div>
+    </div>
 
-    </main>
+    <!-- Footer -->
+    <div class="demo-notice">
+      Esta é uma demonstração interativa do <strong>NexoQuiz</strong>. No fluxo real, as questões são geradas pelo ChatGPT
+      a partir de apostilas canônicas Markdown e entregues via <strong>MCP + Apps SDK</strong> com gabarito cifrado em AES-256-GCM.<br>
+      <a href="https://github.com/junior-aguiar-eng/NexoQuest" target="_blank">Ver repositório no GitHub →</a>
+    </div>
   </div>
 
-  <script>
-    function switchTab(tabId) {
-      document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
-      document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
-      
-      event.target.classList.add('active');
-      document.getElementById(tabId).classList.add('active');
+<script>
+// ═══════════════════════════════════════════════════════════
+//  BANCO DE QUESTÕES JURÍDICAS (DEMO)
+// ═══════════════════════════════════════════════════════════
+const questions = [
+  {
+    subject: "Direito Constitucional",
+    difficulty: "hard",
+    type: "Caso Narrativo",
+    stem: "Maria, servidora pública federal estável, foi exonerada de seu cargo sem processo administrativo disciplinar prévio, sob a justificativa de \"necessidade de enxugamento da máquina pública\". Inconformada, impetrou mandado de segurança. À luz da Constituição Federal de 1988 e da jurisprudência consolidada do STF, assinale a alternativa correta:",
+    alternatives: [
+      { letter: "A", text: "A exoneração é válida, pois a Administração Pública possui discricionariedade para dispensar servidores com base no interesse público." },
+      { letter: "B", text: "O servidor estável somente pode perder o cargo mediante sentença judicial transitada em julgado, processo administrativo disciplinar com ampla defesa, ou avaliação periódica de desempenho insuficiente (art. 41, §1º, CF)." },
+      { letter: "C", text: "A estabilidade do servidor público pode ser flexibilizada em períodos de crise fiscal, conforme decisão do STF na ADI 2.135." },
+      { letter: "D", text: "O mandado de segurança é incabível, pois Maria deveria ter impetrado ação ordinária com pedido de reintegração." },
+      { letter: "E", text: "A estabilidade prevista no art. 41 da CF aplica-se apenas aos servidores celetistas da Administração Direta." }
+    ],
+    correctAnswer: "B",
+    justification: "O art. 41, §1º, da CF/88 estabelece taxativamente as hipóteses de perda do cargo pelo servidor estável: (I) sentença judicial transitada em julgado; (II) processo administrativo disciplinar com garantia de ampla defesa; (III) avaliação periódica de desempenho, na forma de lei complementar. A mera alegação de \"enxugamento\" não se enquadra em nenhuma dessas hipóteses constitucionais.",
+    legalBasis: "Art. 41, §1º, incisos I a III, CF/88; Súmula 20 do STF.",
+    distractors: {
+      "A": "A discricionariedade administrativa não se estende à dispensa de servidores estáveis — trata-se de matéria sujeita a reserva legal e processual constitucional.",
+      "C": "A ADI 2.135 suspendeu a EC 19/98 quanto à flexibilização do regime jurídico único, não autorizando dispensa por crise fiscal.",
+      "D": "O mandado de segurança é cabível contra ato de autoridade que viole direito líquido e certo (art. 5º, LXIX, CF).",
+      "E": "A estabilidade do art. 41 aplica-se aos servidores estatutários, não aos celetistas."
     }
-  </script>
+  },
+  {
+    subject: "Direito Processual Civil",
+    difficulty: "medium",
+    type: "Proposições",
+    stem: "Sobre os requisitos de admissibilidade do Recurso Especial perante o Superior Tribunal de Justiça, analise as proposições e assinale a alternativa correta:",
+    alternatives: [
+      { letter: "A", text: "O prequestionamento da matéria federal é dispensável quando a violação legal for manifesta e de interesse público." },
+      { letter: "B", text: "Cabe Recurso Especial para reexame de provas produzidas nas instâncias ordinárias, desde que se demonstre violação ao princípio do livre convencimento motivado." },
+      { letter: "C", text: "O Recurso Especial exige prequestionamento da questão federal (Súmula 211/STJ), não serve para reexame de provas (Súmula 7/STJ) e pressupõe esgotamento das vias ordinárias." },
+      { letter: "D", text: "O Recurso Especial pode ser interposto diretamente contra decisão de juiz de primeiro grau, desde que haja violação de lei federal." },
+      { letter: "E", text: "A interposição simultânea de Recurso Especial e Recurso Extraordinário é vedada pelo ordenamento processual brasileiro." }
+    ],
+    correctAnswer: "C",
+    justification: "O Recurso Especial (art. 105, III, CF) exige: (1) prequestionamento da matéria federal (Súmula 211/STJ — \"inadmissível recurso especial quanto à questão que, a despeito da oposição de embargos declaratórios, não foi apreciada pelo tribunal a quo\"); (2) impossibilidade de reexame fático-probatório (Súmula 7/STJ); (3) decisão de tribunal (não de juiz singular).",
+    legalBasis: "Art. 105, III, CF/88; Súmulas 7 e 211 do STJ; art. 1.029 do CPC/2015.",
+    distractors: {
+      "A": "O prequestionamento é requisito indispensável, mesmo em questões de ordem pública (Súmula 211/STJ e Súmula 282/STF por analogia).",
+      "B": "A Súmula 7/STJ veda expressamente o reexame de provas em sede de REsp.",
+      "D": "O REsp pressupõe decisão de tribunal (última instância ordinária), não de juiz singular.",
+      "E": "A interposição simultânea de REsp e RE é admitida e regulada pelo art. 1.031 do CPC/2015."
+    }
+  },
+  {
+    subject: "Direito Penal",
+    difficulty: "hard",
+    type: "Caso Narrativo",
+    stem: "João, policial militar, durante operação de patrulhamento noturno, dispara arma de fogo contra Pedro, que corria em via pública carregando um objeto metálico brilhante. Pedro falece no local. Perícia posterior revela que o objeto era um celular com capa metálica. Sobre a responsabilidade penal de João, assinale a alternativa correta:",
+    alternatives: [
+      { letter: "A", text: "João deve responder por homicídio doloso qualificado, pois assumiu o risco do resultado morte ao disparar sem certeza da ameaça." },
+      { letter: "B", text: "Trata-se de exercício regular de direito, pois policiais militares possuem autorização legal irrestrita para uso de arma de fogo em serviço." },
+      { letter: "C", text: "Configura-se legítima defesa putativa: João supôs, por erro plenamente justificado pelas circunstâncias, estar diante de agressão iminente. Aplica-se o art. 20, §1º, do CP, excluindo o dolo — subsistindo, se houver, a responsabilização culposa." },
+      { letter: "D", text: "O fato é atípico, pois a conduta do policial está amparada pelo estrito cumprimento do dever legal em qualquer circunstância." },
+      { letter: "E", text: "João deve responder por homicídio culposo militar, sendo a competência exclusiva da Justiça Federal." }
+    ],
+    correctAnswer: "C",
+    justification: "A legítima defesa putativa ocorre quando o agente, por erro de tipo permissivo (art. 20, §1º, CP), supõe situação fática que, se existisse, tornaria sua ação legítima. No caso, as circunstâncias (patrulha noturna, pessoa correndo com objeto metálico brilhante) poderiam induzir razoavelmente o agente a crer em agressão iminente. O erro exclui o dolo; se evitável, responde por culpa.",
+    legalBasis: "Art. 20, §1º, e art. 25 do Código Penal; Teoria Limitada da Culpabilidade adotada pelo CP brasileiro.",
+    distractors: {
+      "A": "O dolo eventual exige que o agente tenha consciência real do risco e aceite o resultado. Na legítima defesa putativa, o agente crê genuinamente na existência de agressão.",
+      "B": "Não existe autorização irrestrita para uso de arma de fogo. O uso da força letal é excepcional e proporcional (Lei 13.060/2014).",
+      "D": "O estrito cumprimento do dever legal não é absoluto e exige proporcionalidade e necessidade.",
+      "E": "Crimes de policiais militares em serviço são, em regra, de competência da Justiça Militar Estadual (art. 125, §4º, CF), não da Federal."
+    }
+  },
+  {
+    subject: "Direito Administrativo",
+    difficulty: "easy",
+    type: "Conceitual",
+    stem: "Assinale a alternativa que apresenta corretamente o conceito de ato administrativo vinculado e sua distinção em relação ao ato discricionário:",
+    alternatives: [
+      { letter: "A", text: "O ato vinculado é aquele em que a Administração possui margem de escolha quanto à conveniência e oportunidade de sua prática." },
+      { letter: "B", text: "No ato vinculado, todos os elementos (competência, forma, finalidade, motivo e objeto) estão rigidamente definidos em lei, sem margem de escolha para o administrador. No ato discricionário, a lei confere margem de apreciação quanto ao motivo e ao objeto." },
+      { letter: "C", text: "Atos vinculados e discricionários diferem apenas quanto à competência: nos vinculados, a competência é exclusiva; nos discricionários, é delegável." },
+      { letter: "D", text: "Atos discricionários não estão sujeitos a controle judicial, pois envolvem juízo de mérito administrativo." },
+      { letter: "E", text: "Todo ato praticado pela Administração Pública é discricionário, cabendo ao administrador definir livremente seus elementos." }
+    ],
+    correctAnswer: "B",
+    justification: "O ato administrativo vinculado tem todos os seus elementos (competência, forma, finalidade, motivo e objeto) integralmente previstos em lei, não restando margem de escolha ao administrador. No ato discricionário, a lei confere liberdade limitada quanto ao motivo (conveniência) e ao objeto (oportunidade), mantendo os demais elementos vinculados.",
+    legalBasis: "Doutrina de Hely Lopes Meirelles e Celso Antônio Bandeira de Mello; art. 2º da Lei 4.717/65 (Lei da Ação Popular).",
+    distractors: {
+      "A": "Descrição invertida: margem de conveniência/oportunidade é atributo do ato discricionário, não do vinculado.",
+      "C": "A distinção não reside na competência, mas sim no grau de liberdade quanto ao motivo e ao objeto.",
+      "D": "Atos discricionários estão sujeitos a controle judicial quanto à legalidade, razoabilidade e proporcionalidade (Súmula 473 do STF).",
+      "E": "Nem todo ato é discricionário. Atos como aposentadoria compulsória e licença para construir são vinculados."
+    }
+  },
+  {
+    subject: "Direito Constitucional",
+    difficulty: "hard",
+    type: "Caso Narrativo",
+    stem: "O Governador do Estado X editou decreto determinando a intervenção no Município Y para garantir a prestação de contas do Poder Executivo municipal, alegando que o prefeito não apresentou a prestação de contas no prazo constitucional. Sobre a constitucionalidade dessa intervenção, assinale a alternativa correta:",
+    alternatives: [
+      { letter: "A", text: "A intervenção é inconstitucional, pois apenas a União pode intervir em municípios." },
+      { letter: "B", text: "A intervenção é constitucional e independe de apreciação pelo Poder Legislativo, bastando o decreto do Governador." },
+      { letter: "C", text: "A intervenção estadual em município por não prestação de contas é prevista no art. 35, II, da CF. Depende de decreto do Governador, com apreciação pela Assembleia Legislativa no prazo de 24 horas (art. 36, §1º, CF)." },
+      { letter: "D", text: "O Governador pode intervir no município, mas apenas mediante prévia autorização do Tribunal de Contas estadual." },
+      { letter: "E", text: "A intervenção em municípios foi extinta pela Emenda Constitucional 45/2004." }
+    ],
+    correctAnswer: "C",
+    justification: "A CF/88 prevê a intervenção dos Estados em seus Municípios no art. 35, enumerando taxativamente as hipóteses, entre elas: \"não forem prestadas contas devidas, na forma da lei\" (inciso II). O procedimento exige decreto do Governador e apreciação da Assembleia Legislativa em 24 horas (art. 36, §1º, CF).",
+    legalBasis: "Art. 35, II, e art. 36, §1º, da CF/88.",
+    distractors: {
+      "A": "A CF prevê expressamente a intervenção estadual em municípios (art. 35). A União intervém nos Estados e no DF (art. 34).",
+      "B": "A apreciação pela Assembleia Legislativa é obrigatória (art. 36, §1º), não podendo o Governador agir unilateralmente.",
+      "D": "O Tribunal de Contas emite parecer sobre as contas, mas a autorização para intervenção é da Assembleia Legislativa.",
+      "E": "A EC 45/2004 reformou o Poder Judiciário; a intervenção em municípios permanece inalterada."
+    }
+  }
+];
+
+// ═══════════════════════════════════════════════════════════
+//  ESTADO DO QUIZ
+// ═══════════════════════════════════════════════════════════
+let state = {
+  mode: 'estudo',
+  currentIndex: 0,
+  selectedAnswer: null,
+  confirmed: false,
+  answers: [],      // { selected, correct, isCorrect }
+  marked: [],       // boolean[]
+  timerSeconds: 0,
+  timerInterval: null,
+};
+
+// ═══════════════════════════════════════════════════════════
+//  INICIALIZAÇÃO
+// ═══════════════════════════════════════════════════════════
+function init() {
+  state.answers = new Array(questions.length).fill(null);
+  state.marked = new Array(questions.length).fill(false);
+  renderDots();
+  renderQuestion();
+}
+
+// ═══════════════════════════════════════════════════════════
+//  TEMA
+// ═══════════════════════════════════════════════════════════
+function toggleTheme() {
+  const isDark = document.documentElement.hasAttribute('data-theme');
+  if (isDark) document.documentElement.removeAttribute('data-theme');
+  else document.documentElement.setAttribute('data-theme', 'dark');
+}
+
+// ═══════════════════════════════════════════════════════════
+//  MODO ESTUDO / PROVA
+// ═══════════════════════════════════════════════════════════
+function setMode(mode) {
+  state.mode = mode;
+  document.querySelectorAll('.mode-btn').forEach((btn, i) => {
+    btn.classList.toggle('active', (i === 0 && mode === 'estudo') || (i === 1 && mode === 'prova'));
+  });
+
+  const timerEl = document.getElementById('timer');
+  const modeLabel = document.getElementById('progress-mode-label');
+
+  if (mode === 'prova') {
+    timerEl.classList.add('visible');
+    modeLabel.textContent = 'MODO PROVA';
+    startTimer();
+  } else {
+    timerEl.classList.remove('visible');
+    modeLabel.textContent = 'MODO ESTUDO';
+    stopTimer();
+  }
+
+  // Reset quiz when switching modes
+  state.currentIndex = 0;
+  state.selectedAnswer = null;
+  state.confirmed = false;
+  state.answers = new Array(questions.length).fill(null);
+  state.marked = new Array(questions.length).fill(false);
+  state.timerSeconds = 0;
+  document.getElementById('timer-display').textContent = '00:00';
+  document.getElementById('results-screen').classList.remove('visible');
+  document.getElementById('quiz-area').style.display = 'block';
+  document.getElementById('progress-section').style.display = 'block';
+  renderDots();
+  renderQuestion();
+}
+
+// ═══════════════════════════════════════════════════════════
+//  CRONÔMETRO
+// ═══════════════════════════════════════════════════════════
+function startTimer() {
+  stopTimer();
+  state.timerSeconds = 0;
+  state.timerInterval = setInterval(() => {
+    state.timerSeconds++;
+    const m = String(Math.floor(state.timerSeconds / 60)).padStart(2, '0');
+    const s = String(state.timerSeconds % 60).padStart(2, '0');
+    document.getElementById('timer-display').textContent = `${m}:${s}`;
+  }, 1000);
+}
+
+function stopTimer() {
+  if (state.timerInterval) {
+    clearInterval(state.timerInterval);
+    state.timerInterval = null;
+  }
+}
+
+// ═══════════════════════════════════════════════════════════
+//  RENDERIZAR QUESTÃO
+// ═══════════════════════════════════════════════════════════
+function renderQuestion() {
+  const q = questions[state.currentIndex];
+  state.selectedAnswer = null;
+  state.confirmed = false;
+
+  // Meta tags
+  const diffClass = q.difficulty === 'hard' ? 'tag-difficulty-hard' :
+                     q.difficulty === 'medium' ? 'tag-difficulty-medium' : 'tag-difficulty-easy';
+  const diffLabel = q.difficulty === 'hard' ? 'Difícil' :
+                    q.difficulty === 'medium' ? 'Média' : 'Fácil';
+
+  document.getElementById('question-meta').innerHTML = `
+    <span class="question-tag tag-subject">${q.subject}</span>
+    <span class="question-tag ${diffClass}">${diffLabel}</span>
+    <span class="question-tag tag-type">${q.type}</span>
+  `;
+
+  document.getElementById('question-number').textContent = `Questão ${state.currentIndex + 1} de ${questions.length}`;
+  document.getElementById('question-stem').textContent = q.stem;
+
+  // Alternatives
+  const altContainer = document.getElementById('alternatives');
+  altContainer.innerHTML = q.alternatives.map(alt => `
+    <div class="alternative" id="alt-${alt.letter}" onclick="selectAnswer('${alt.letter}')">
+      <span class="alt-letter">${alt.letter}</span>
+      <span class="alt-text">${alt.text}</span>
+    </div>
+  `).join('');
+
+  // Buttons
+  document.getElementById('btn-confirm').disabled = true;
+  document.getElementById('btn-mark').textContent = state.marked[state.currentIndex] ? '🏷 Marcada ✓' : '🏷 Marcar para Revisão';
+  document.getElementById('confirm-section').style.display = 'flex';
+  document.getElementById('next-section').style.display = 'none';
+  document.getElementById('correction-panel').classList.remove('visible');
+
+  // Progress
+  document.getElementById('progress-counter').textContent = `Questão ${state.currentIndex + 1} de ${questions.length}`;
+  document.getElementById('progress-fill').style.width = `${((state.currentIndex + 1) / questions.length) * 100}%`;
+  updateDots();
+}
+
+// ═══════════════════════════════════════════════════════════
+//  PROGRESS DOTS
+// ═══════════════════════════════════════════════════════════
+function renderDots() {
+  const container = document.getElementById('progress-dots');
+  container.innerHTML = questions.map((_, i) =>
+    `<div class="progress-dot" id="dot-${i}" onclick="goToQuestion(${i})" title="Questão ${i+1}"></div>`
+  ).join('');
+}
+
+function updateDots() {
+  questions.forEach((_, i) => {
+    const dot = document.getElementById(`dot-${i}`);
+    dot.className = 'progress-dot';
+    if (i === state.currentIndex) dot.classList.add('current');
+    else if (state.answers[i]) {
+      dot.classList.add(state.answers[i].isCorrect ? 'answered' : 'wrong');
+    }
+  });
+}
+
+function goToQuestion(index) {
+  if (state.mode === 'prova' && !state.confirmed) {
+    // Em modo prova, permitir navegação livre
+  }
+  state.currentIndex = index;
+  renderQuestion();
+  // Se já respondeu esta questão, mostrar correção
+  if (state.answers[index] && state.mode === 'estudo') {
+    showCorrection(state.answers[index].selected, questions[index]);
+  }
+}
+
+// ═══════════════════════════════════════════════════════════
+//  SELECIONAR RESPOSTA
+// ═══════════════════════════════════════════════════════════
+function selectAnswer(letter) {
+  if (state.confirmed) return;
+
+  state.selectedAnswer = letter;
+  document.querySelectorAll('.alternative').forEach(el => el.classList.remove('selected'));
+  document.getElementById(`alt-${letter}`).classList.add('selected');
+  document.getElementById('btn-confirm').disabled = false;
+}
+
+// ═══════════════════════════════════════════════════════════
+//  CONFIRMAR RESPOSTA
+// ═══════════════════════════════════════════════════════════
+function confirmAnswer() {
+  if (!state.selectedAnswer || state.confirmed) return;
+
+  state.confirmed = true;
+  const q = questions[state.currentIndex];
+  const isCorrect = state.selectedAnswer === q.correctAnswer;
+
+  state.answers[state.currentIndex] = {
+    selected: state.selectedAnswer,
+    correct: q.correctAnswer,
+    isCorrect
+  };
+
+  // Highlight alternatives
+  document.querySelectorAll('.alternative').forEach(el => el.classList.add('disabled'));
+  document.getElementById(`alt-${q.correctAnswer}`).classList.add('correct');
+  if (!isCorrect) {
+    document.getElementById(`alt-${state.selectedAnswer}`).classList.add('wrong');
+  }
+
+  // Hide confirm, show next
+  document.getElementById('confirm-section').style.display = 'none';
+
+  if (state.mode === 'estudo') {
+    showCorrection(state.selectedAnswer, q);
+  }
+
+  const isLast = state.currentIndex === questions.length - 1;
+  document.getElementById('btn-next').textContent = isLast ? '📊 Ver Resultado' : 'Próxima Questão →';
+  document.getElementById('next-section').style.display = 'flex';
+
+  updateDots();
+}
+
+// ═══════════════════════════════════════════════════════════
+//  CORREÇÃO PEDAGÓGICA (MODO ESTUDO)
+// ═══════════════════════════════════════════════════════════
+function showCorrection(selected, q) {
+  const isCorrect = selected === q.correctAnswer;
+  const panel = document.getElementById('correction-panel');
+  const header = document.getElementById('correction-header');
+  const body = document.getElementById('correction-body');
+
+  header.className = `correction-header ${isCorrect ? 'correct-header' : 'wrong-header'}`;
+  header.innerHTML = isCorrect
+    ? '✅ Resposta Correta!'
+    : `❌ Incorreta — Gabarito: alternativa ${q.correctAnswer}`;
+
+  let html = `
+    <div class="correction-section">
+      <div class="correction-label">Fundamentação</div>
+      <div class="correction-text">${q.justification}</div>
+    </div>
+    <div class="correction-section">
+      <div class="correction-label">Base Legal</div>
+      <div class="correction-text">${q.legalBasis}</div>
+    </div>
+  `;
+
+  // Accordion de distratores
+  if (q.distractors) {
+    html += `<div class="correction-section">
+      <div class="correction-label">Análise dos Distratores</div>`;
+    for (const [letter, analysis] of Object.entries(q.distractors)) {
+      html += `
+        <div class="accordion" onclick="this.classList.toggle('open')">
+          <div class="accordion-header">
+            <span>Alternativa ${letter} — Por que está errada?</span>
+            <span class="accordion-arrow">▼</span>
+          </div>
+          <div class="accordion-body">
+            <div class="accordion-content">${analysis}</div>
+          </div>
+        </div>`;
+    }
+    html += `</div>`;
+  }
+
+  body.innerHTML = html;
+  panel.classList.add('visible');
+
+  // Highlight correct and wrong on all alternatives
+  document.querySelectorAll('.alternative').forEach(el => el.classList.add('disabled'));
+  document.getElementById(`alt-${q.correctAnswer}`).classList.add('correct');
+  if (!isCorrect) {
+    document.getElementById(`alt-${selected}`).classList.add('wrong');
+  }
+  state.confirmed = true;
+  document.getElementById('confirm-section').style.display = 'none';
+  document.getElementById('next-section').style.display = 'flex';
+  const isLast = state.currentIndex === questions.length - 1;
+  document.getElementById('btn-next').textContent = isLast ? '📊 Ver Resultado' : 'Próxima Questão →';
+}
+
+// ═══════════════════════════════════════════════════════════
+//  MARCAR PARA REVISÃO
+// ═══════════════════════════════════════════════════════════
+function toggleMark() {
+  state.marked[state.currentIndex] = !state.marked[state.currentIndex];
+  document.getElementById('btn-mark').textContent = state.marked[state.currentIndex] ? '🏷 Marcada ✓' : '🏷 Marcar para Revisão';
+}
+
+// ═══════════════════════════════════════════════════════════
+//  PRÓXIMA QUESTÃO / RESULTADO
+// ═══════════════════════════════════════════════════════════
+function nextQuestion() {
+  if (state.currentIndex < questions.length - 1) {
+    state.currentIndex++;
+    renderQuestion();
+  } else {
+    showResults();
+  }
+}
+
+// ═══════════════════════════════════════════════════════════
+//  TELA DE RESULTADO
+// ═══════════════════════════════════════════════════════════
+function showResults() {
+  stopTimer();
+  document.getElementById('quiz-area').style.display = 'none';
+  document.getElementById('progress-section').style.display = 'none';
+  document.getElementById('results-screen').classList.add('visible');
+
+  const correct = state.answers.filter(a => a && a.isCorrect).length;
+  const wrong = state.answers.filter(a => a && !a.isCorrect).length;
+  const total = questions.length;
+  const pct = Math.round((correct / total) * 100);
+
+  document.getElementById('results-subtitle').textContent =
+    state.mode === 'prova'
+      ? `Simulado concluído em ${document.getElementById('timer-display').textContent}`
+      : 'Simulado concluído no Modo Estudo';
+
+  document.getElementById('results-score').textContent = `${pct}%`;
+  document.getElementById('results-fraction').textContent = `${correct} de ${total} questões corretas`;
+
+  const m = Math.floor(state.timerSeconds / 60);
+  const s = state.timerSeconds % 60;
+  const timeStr = state.mode === 'prova' ? `${m}m ${s}s` : '—';
+
+  document.getElementById('results-grid').innerHTML = `
+    <div class="result-stat">
+      <div class="result-stat-value stat-correct">${correct}</div>
+      <div class="result-stat-label">Acertos</div>
+    </div>
+    <div class="result-stat">
+      <div class="result-stat-value stat-wrong">${wrong}</div>
+      <div class="result-stat-label">Erros</div>
+    </div>
+    <div class="result-stat">
+      <div class="result-stat-value stat-time">${timeStr}</div>
+      <div class="result-stat-label">Tempo Total</div>
+    </div>
+  `;
+}
+
+function restartQuiz() {
+  setMode(state.mode);
+}
+
+// ═══════════════════════════════════════════════════════════
+//  START
+// ═══════════════════════════════════════════════════════════
+init();
+</script>
+
 </body>
 </html>
