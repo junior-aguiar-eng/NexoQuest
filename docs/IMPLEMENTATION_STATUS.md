@@ -52,6 +52,6 @@ Este documento registra o estado factual das fases de engenharia do NexoQuiz.
 - [x] **Fase 12** — Integração de `widgetState` (sincronização com ChatGPT Apps SDK e persistência local com debounce)
 - [x] **Fase 13** — SQLite e persistência local (`SessionRepository`, `quiz_sessions`, `session_answers`, métricas por disciplina)
 - [x] **Fase 14** — Relatório final e revisão (`ResultsScreen` analítico, filtros de erro/revisão, cópia de diagnóstico)
-- [ ] **Fase 15** — Limpeza do legado QuizHP
+- [x] **Fase 15** — Limpeza do legado QuizHP (`createNexoQuizServer`, remoção de mini-games de 8MB, bundle enxuto e desacoplamento total)
 - [ ] **Fase 16** — Hardening do MCP e do widget
 - [ ] **Fase 17** — Integração real no ChatGPT

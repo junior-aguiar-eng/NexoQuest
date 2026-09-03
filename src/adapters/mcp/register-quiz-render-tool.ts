@@ -1,5 +1,5 @@
 import type { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
-import { registerAppTool } from "@modelcontextprotocol/ext-apps/server";
+import { registerAppTool, registerAppResource, RESOURCE_MIME_TYPE } from "@modelcontextprotocol/ext-apps/server";
 import { z } from "zod";
 import { QuestionInternal, QuestionInternalSchema, QuestionPublic } from "../../core/domain/question.js";
 import { validateQuestionContent } from "../../core/quiz/question-validator.js";
@@ -14,9 +14,42 @@ export const QuizRenderInputSchema = {
 };
 
 /**
- * Registra a ferramenta principal quiz_render que valida, protege o gabarito em token cifrado e renderiza o widget
+ * Registra a ferramenta principal quiz_render e o recurso ui://nexoquiz/quiz-app.html
  */
-export function registerQuizRenderTool(server: McpServer): void {
+export function registerQuizRenderTool(
+  server: McpServer,
+  getWidgetHtml?: () => Promise<string>,
+  connectDomains?: string[]
+): void {
+  if (getWidgetHtml) {
+    registerAppResource(
+      server,
+      "NexoQuiz App",
+      "ui://nexoquiz/quiz-app.html",
+      {
+        description: "Widget do QuestionPlayer sóbrio para o ChatGPT Apps SDK",
+        _meta: {
+          ui: {
+            csp: {
+              connectDomains: connectDomains ?? [],
+            },
+          },
+        },
+      },
+      async () => {
+        const html = await getWidgetHtml();
+        return {
+          contents: [
+            {
+              uri: "ui://nexoquiz/quiz-app.html",
+              mimeType: RESOURCE_MIME_TYPE,
+              text: html,
+            },
+          ],
+        };
+      }
+    );
+  }
   registerAppTool(
     server,
     "quiz_render",
