@@ -45,7 +45,7 @@ Este documento registra o estado factual das fases de engenharia do NexoQuiz.
 - [x] **Fase 5** — Engine de sessão no frontend (Zustand `quiz-ui-store`, modos Estudo/Prova, `ProgressBar`, `Timer`, `ConfidenceSelector`, `ReviewFlag`, `ResultsScreen`, atalhos de teclado)
 - [x] **Fase 6** — Correção jurídica e accordions (`CorrectionPanel`, diagnóstico pedagógico, fundamentação, `DistractorAccordion` com recolhimento por padrão)
 - [x] **Fase 7** — Biblioteca Markdown (`gray-matter`, `unified/remark` AST, `MaterialIndexer`, SQLite FTS5, CLI `library:validate` e `library:index`)
-- [ ] **Fase 8** — Tools MCP de biblioteca
+- [x] **Fase 8** — Tools MCP de biblioteca (`library_list_materials`, `library_get_outline`, `library_search`, `library_read_sections`)
 - [ ] **Fase 9** — Planejamento de UMT e geração: protocolo do host
 - [ ] **Fase 10** — `quiz_render` stateless e proteção do gabarito
 - [ ] **Fase 11** — `quiz_grade_answer`
