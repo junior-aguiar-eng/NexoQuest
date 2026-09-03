@@ -8,7 +8,7 @@ hero:
   actions:
     - theme: brand
       text: Testar Simulador Live 🎮
-      link: /simulator.html
+      link: /demo
     - theme: alt
       text: Guia de Integração
       link: /CHATGPT_INTEGRATION

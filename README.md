@@ -16,7 +16,7 @@
 
 <div align="center">
 
-### 🎮 [▶ Testar o Simulador Interativo Live](https://junior-aguiar-eng.github.io/NexoQuest/simulator.html)
+### 🎮 [▶ Testar o Simulador Interativo Live](https://junior-aguiar-eng.github.io/NexoQuest/demo.html)
 
 Experimente o NexoQuiz diretamente no navegador — sem instalação, sem cadastro.
 Alterne entre **Modo Estudo** (com diagnóstico pedagógico e análise de distratores) e **Modo Prova** (com cronômetro e relatório analítico de desempenho).
