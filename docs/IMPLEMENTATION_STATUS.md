@@ -41,7 +41,7 @@ Este documento registra o estado factual das fases de engenharia do NexoQuiz.
 - [x] **Fase 1** — Guardrails do projeto (`AGENTS.md`, `ARCHITECTURE.md`, `TEST_MATRIX.md`, ADRs 001-010)
 - [x] **Fase 2** — Substituição visual mínima do GameRuntime (`QuestionPlayer`, `AlternativeList`, `ConfirmAnswerButton`)
 - [x] **Fase 3** — Contratos de domínio + Zod (`primitives`, `umt`, `quiz-plan`, `question`, `correction`, `session`)
-- [ ] **Fase 4** — Engine determinística de bloco e validação FGV
+- [x] **Fase 4** — Engine determinística de bloco e validação FGV (`answer-rotation`, `block-rules`, `plan-validator`, `question-validator`, `result-calculator`)
 - [ ] **Fase 5** — Engine de sessão no frontend
 - [ ] **Fase 6** — Correção jurídica e accordions
 - [ ] **Fase 7** — Biblioteca Markdown
