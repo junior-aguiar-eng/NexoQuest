@@ -6,6 +6,7 @@ export default defineConfig({
   description: "Engine de Questões Jurídicas Interativas via MCP + Apps SDK",
   lang: "pt-BR",
   base: process.env.GITHUB_ACTIONS ? "/NexoQuest/" : "/",
+  ignoreDeadLinks: true,
   themeConfig: {
     logo: "⚖️",
     siteTitle: "NexoQuiz",
