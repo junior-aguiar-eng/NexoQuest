@@ -5,13 +5,10 @@ hero:
   name: "NexoQuiz"
   text: "Simulados Jurídicos Interativos"
   tagline: "Engine determinística para ChatGPT MCP e Apps SDK baseada em biblioteca canônica Markdown"
-  image:
-    src: /logo.svg
-    alt: NexoQuiz
   actions:
     - theme: brand
       text: Testar Simulador Live 🎮
-      link: /demo
+      link: /simulator.html
     - theme: alt
       text: Guia de Integração
       link: /CHATGPT_INTEGRATION
