@@ -10,7 +10,6 @@ import type {
   McpUiDisplayMode,
 } from "@modelcontextprotocol/ext-apps";
 import { QuestionPlayer } from "./components/QuestionPlayer";
-import { SAMPLE_LEGAL_QUESTION } from "./fixtures/sampleQuestion";
 
 export function QuizApp() {
   const [hostContext, setHostContext] = useState<McpUiHostContext | undefined>();
@@ -38,7 +37,7 @@ export function QuizApp() {
     []
   );
 
-  const { isConnected, error } = useApp({
+  const { error } = useApp({
     appInfo: { name: "NexoQuiz", version: "1.0.0" },
     capabilities: {
       availableDisplayModes: ["inline", "fullscreen"] as McpUiDisplayMode[],
@@ -61,11 +60,5 @@ export function QuizApp() {
   if (error) return <div style={{ padding: 24, color: "red" }}>{error.message}</div>;
   if (errorMessage) return <div style={{ padding: 24, color: "red" }}>{errorMessage}</div>;
 
-  // In Phase 2, render QuestionPlayer with neutral legal sample fixture
-  return (
-    <QuestionPlayer
-      question={SAMPLE_LEGAL_QUESTION}
-      hasNext={false}
-    />
-  );
+  return <QuestionPlayer />;
 }
