@@ -1,134 +1,154 @@
-# QuizHP MCP Server
+# NexoQuiz ⚖️
 
-An interactive quiz MCP server that turns any topic into playable mini-games. Each question renders as a unique canvas game — archery, puzzles, switches, and 125+ more templates.
+<div align="center">
 
-## Features
+![TypeScript](https://img.shields.io/badge/TypeScript-5.7-blue?logo=typescript&logoColor=white)
+![Testes](https://img.shields.io/badge/Testes-54%2F54%20Passando-brightgreen)
+![MCP](https://img.shields.io/badge/Protocolo-MCP%20%2B%20Apps%20SDK-purple)
+![Licença](https://img.shields.io/badge/Licen%C3%A7a-MIT-green)
+![Status](https://img.shields.io/badge/Vers%C3%A3o-1.0.0%20(V1%20Conclu%C3%ADda)-success)
 
-- **125+ game templates** — MCQ and true/false questions each get a unique mini-game (piano keys, treasure chests, archery, bomb defusal, etc.)
-- **Multi-platform** — responsive layouts for desktop and mobile with fullscreen support
-- **MCP App UI** — rich interactive widget rendered inside Claude or ChatGPT
-- **Three deployment modes** — stdio (Claude Desktop), HTTP (remote server), Cloudflare Worker
-- **Score reporting** — quiz results sent back to the AI for follow-up discussion
-- **No external dependencies** — all templates are bundled, no API calls needed
+**Engine de Questões Jurídicas Interativas para Magistratura e ENAM via Model Context Protocol (MCP) e ChatGPT Apps SDK**
 
-## Installation
+</div>
 
-```bash
-npm install quizhp
+---
+
+## 📌 Visão Geral
+
+O **NexoQuiz** é uma plataforma determinística e host-agnóstica de avaliação jurídica digital. Ele transforma apostilas canônicas em Markdown em simulados interativos de alto nível para carreiras jurídicas (ENAM, Magistratura, Ministério Público e Defensoria).
+
+A aplicação opera integrada nativamente ao **ChatGPT** através do **MCP (Model Context Protocol)** e do **Apps SDK**, mantendo uma separação estrita de responsabilidades: o modelo de IA formula os simulados com base nas apostilas, enquanto o servidor valida contratos pedagógicos, protege os gabaritos criptograficamente e realiza a correção determinística sem alucinações.
+
+---
+
+## 🏛️ Invariantes Arquiteturais e Pilares
+
+1. **Host-Agnostic no Core**:
+   - Todo o núcleo de domínio (`src/core/`) é 100% puro e independente. Não há acoplamento ou dependência de SDKs externos de IA.
+2. **Zero Chamadas de LLM no Backend**:
+   - O backend não realiza requisições para APIs de IA. O ChatGPT atua como cliente inteligente que consome as ferramentas do servidor.
+3. **Biblioteca Canônica em Markdown**:
+   - As apostilas e leis residem em arquivos Markdown estruturados com frontmatter Zod e parser AST `unified/remark`, indexados via SQLite FTS5 para busca lexical ultrarrápida.
+4. **Proteção Criptográfica do Gabarito (`opaqueGradingToken`)**:
+   - O objeto público entregue ao host (`QuestionPublic`) **nunca** contém a resposta correta ou justificativas. O gabarito trafega cifrado em AES-256-GCM para correção stateless.
+5. **Interface Digital Sóbria (Sem Gamificação)**:
+   - Foco absoluto em uma experiência de prova digital limpa e técnica (alternativas A–E com seleção e confirmação explícitas, cronômetro, accordions de distratores e relatório analítico de erros).
+6. **Regras Pedagógicas FGV em Código**:
+   - Validação determinística do bloco 3:1:1 (3 casos narrativos, 1 proposições, 1 conceitual; 3 difíceis, 1 média, 1 fácil) e rotação de letras sem gabaritos consecutivos duplicados.
+
+---
+
+## 🔄 Fluxo de Funcionamento
+
+```mermaid
+sequenceDiagram
+    autonumber
+    actor Aluno as Aluno / Candidato
+    participant Host as ChatGPT (Host de IA)
+    participant MCP as Servidor NexoQuiz (MCP)
+    participant Widget as Widget React (Apps SDK)
+
+    Host->>MCP: library_list_materials & library_search
+    MCP-->>Host: Trechos canônicos das apostilas
+    Host->>MCP: quiz_plan_validate (Bloco FGV 3:1:1)
+    MCP-->>Host: Plano Aprovado
+    Host->>MCP: quiz_render (QuestionInternal[])
+    MCP-->>Widget: QuestionPublic[] + opaqueGradingToken (AES-GCM)
+    Widget->>Aluno: Exibe Questão (Alternativas A–E)
+    Aluno->>Widget: Assinala alternativa e confirma
+    Widget->>MCP: quiz_grade_answer (token + alternativa)
+    MCP-->>Widget: Resultado + Diagnóstico Pedagógico + Distratores
+    Widget->>Aluno: Abre accordions com fundamentação e base legal
 ```
 
-### Claude Desktop
+---
 
-Add to your `claude_desktop_config.json`:
+## 🛠️ Ferramentas MCP Disponíveis
 
-```json
-{
-  "mcpServers": {
-    "quizhp": {
-      "command": "npx",
-      "args": ["-y", "quizhp"]
-    }
-  }
-}
-```
+| Família | Ferramenta | Descrição |
+| :--- | :--- | :--- |
+| **Biblioteca** | `library_list_materials` | Lista o catálogo de apostilas disponíveis. |
+| **Biblioteca** | `library_get_outline` | Retorna a árvore hierárquica de tópicos da matéria. |
+| **Biblioteca** | `library_search` | Busca lexical ranqueada por SQLite FTS5. |
+| **Biblioteca** | `library_read_sections` | Recupera o texto integral de seções selecionadas. |
+| **Planejamento** | `quiz_plan_template` | Emite a estrutura modelo de um bloco de 5 questões. |
+| **Planejamento** | `quiz_plan_validate` | Valida deterministicamente as proporções pedagógicas FGV. |
+| **Renderização** | `quiz_render` | Entrega o widget React com token de gabarito cifrado. |
+| **Correção** | `quiz_grade_answer` | Corrige a resposta e emite diagnóstico detalhado do equívoco. |
+| **Persistência** | `quiz_get_history` | Consulta o histórico de tentativas e acurácia por matéria. |
+| **Persistência** | `quiz_save_session` | Grava o resultado consolidado do simulado no SQLite local. |
 
-### Claude.ai (Remote HTTP)
+---
 
-Deploy the server and connect via the MCP endpoint:
+## 🚀 Como Executar Localmente
 
+### 1. Pré-requisitos
+- Node.js 22+ instalado.
+
+### 2. Instalação das Dependências
 ```bash
-# Start the HTTP server
-npx quizhp start
-
-# Or run directly
-node dist/server/index.js
-```
-
-The MCP endpoint is available at `http://localhost:3001/mcp`.
-
-### ChatGPT
-
-Deploy the HTTP server and point ChatGPT's MCP integration to your `/mcp` endpoint. CORS is pre-configured for `chatgpt.com` and `chat.openai.com`.
-
-### Cloudflare Worker
-
-```bash
-# Deploy to Cloudflare Workers
-npx wrangler deploy
-```
-
-## Usage Examples
-
-### Basic Quiz
-
-Ask Claude:
-> "Quiz me on the solar system"
-
-Claude generates questions and calls the `play-quiz` tool. Each question appears as a different interactive mini-game.
-
-### Document-Based Quiz
-
-> "Read this PDF and quiz me on the key concepts"
-
-Claude extracts facts from the document and creates grounded quiz questions.
-
-### Custom Configuration
-
-> "Give me 15 hard true/false questions about JavaScript closures"
-
-The AI adapts question count, difficulty, and type mix based on your request.
-
-## Development
-
-```bash
-# Install dependencies
 npm install
+```
 
-# Build everything (server + view)
-npm run build
+### 3. Execução dos Testes e Validações
+```bash
+# Executar a suíte completa de 54 testes unitários e de integração
+npm test
 
-# Build only the view widget
+# Executar a verificação End-to-End da jornada do quiz
+npm run verify:e2e
+
+# Verificar tipagem TypeScript estrita
+npm run typecheck
+```
+
+### 4. Iniciar o Servidor MCP
+```bash
+# Compilar o widget React
 npm run build:view
 
-# Build only the server
-npm run build:server
-
-# Dev mode (auto-reload)
-npm run dev
-
-# Start HTTP server
+# Iniciar o servidor HTTP Streamable MCP na porta 3001
 npm start
+```
+*O endpoint MCP estará escutando em `http://localhost:3001/mcp`.*
 
-# Start stdio server
-npm run start:stdio
+### 5. Iniciar o Portal de Documentação (VitePress)
+```bash
+npm run docs:dev
+```
+*Acesse a documentação completa em `http://localhost:5173`.*
+
+---
+
+## 📂 Estrutura do Projeto
+
+```
+nexoquiz/
+├── src/
+│   ├── core/                  # Núcleo 100% puro e Host-Agnostic
+│   │   ├── domain/            # Contratos canônicos Zod (Question, Plan, UMT, Session)
+│   │   ├── library/           # Parser Markdown AST e Indexador SQLite FTS5
+│   │   ├── quiz/              # Validadores FGV, rotação e serviço de correção
+│   │   ├── persistence/       # Repositório SQLite nativo de sessões e métricas
+│   │   └── security/          # Criptografia AES-256-GCM (opaqueGradingToken)
+│   ├── adapters/mcp/          # Registro de ferramentas MCP
+│   ├── nexoquiz-server.ts     # Fábrica unificada do servidor MCP
+│   ├── index.ts               # Servidor HTTP Express com Streamable MCP
+│   └── stdio.ts               # Ponto de entrada stdio para clientes desktop
+├── view/                      # Frontend React sóbrio (ChatGPT Apps SDK)
+│   ├── src/
+│   │   ├── components/        # QuestionPlayer, AlternativeList, CorrectionPanel, ResultsScreen
+│   │   ├── store/             # Zustand store sincronizado com widgetState
+│   │   └── QuizApp.tsx        # Container com ErrorBoundary e tema automático
+│   └── vite.config.ts         # Configuração de build para bundle HTML único
+├── library/                   # Apostilas canônicas em Markdown (.md)
+├── docs/                      # Documentação completa, ADRs 001-010 e Guias
+└── tests/                     # 54 testes automatizados de unidade, segurança e integração
 ```
 
-## Architecture
+---
 
-```
-src/
-  index.ts          — Express HTTP server (Streamable HTTP transport)
-  stdio.ts          — Stdio server (Claude Desktop)
-  worker.ts         — Cloudflare Worker entry point
-  quiz-server.ts    — MCP server factory (tool + resource registration)
-  game-store.ts     — In-memory session store with TTL
-  template-store.ts — Loads game templates from bundled files
-  types.ts          — Shared TypeScript types
+## 📄 Licença
 
-view/src/
-  QuizApp.tsx       — Main MCP App component
-  components/       — React UI (QuizContainer, GameRuntime, EndScreen, etc.)
-  store/            — Zustand state management
-  hooks/            — postMessage communication hook
-  lib/              — Template injection utilities
-
-templates/          — 125+ HTML canvas game templates
-  web/mcq/          — Desktop multiple-choice games
-  web/true-false/   — Desktop true/false games
-  mobile/mcq/       — Mobile multiple-choice games
-  mobile/true-false/ — Mobile true/false games
-```
-
-## License
-
-MIT
+Distribuído sob a licença MIT. Consulte `LICENSE` para mais detalhes.
