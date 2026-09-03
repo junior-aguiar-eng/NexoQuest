@@ -10,6 +10,7 @@ import type {
   McpUiDisplayMode,
 } from "@modelcontextprotocol/ext-apps";
 import { QuestionPlayer } from "./components/QuestionPlayer";
+import { QuizErrorBoundary } from "./components/QuizErrorBoundary";
 
 export function QuizApp() {
   const [hostContext, setHostContext] = useState<McpUiHostContext | undefined>();
@@ -60,5 +61,9 @@ export function QuizApp() {
   if (error) return <div style={{ padding: 24, color: "red" }}>{error.message}</div>;
   if (errorMessage) return <div style={{ padding: 24, color: "red" }}>{errorMessage}</div>;
 
-  return <QuestionPlayer />;
+  return (
+    <QuizErrorBoundary>
+      <QuestionPlayer />
+    </QuizErrorBoundary>
+  );
 }

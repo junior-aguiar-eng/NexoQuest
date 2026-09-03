@@ -61,7 +61,7 @@ async function getWidgetHtml(): Promise<string> {
 
 const app = express();
 app.set("trust proxy", 1);
-app.use(express.json());
+app.use(express.json({ limit: "512kb" }));
 
 // CORS para clientes MCP (ChatGPT, Claude)
 app.use((req, res, next) => {
