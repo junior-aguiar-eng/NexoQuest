@@ -5,12 +5,14 @@ export default defineConfig({
   title: "NexoQuiz",
   description: "Engine de Questões Jurídicas Interativas via MCP + Apps SDK",
   lang: "pt-BR",
+  base: process.env.GITHUB_ACTIONS ? "/NexoQuest/" : "/",
   themeConfig: {
     logo: "⚖️",
     siteTitle: "NexoQuiz",
 
     nav: [
       { text: "Início", link: "/" },
+      { text: "Simulador Live 🎮", link: "/demo" },
       { text: "Arquitetura", link: "/ARCHITECTURE" },
       { text: "Integração ChatGPT", link: "/CHATGPT_INTEGRATION" },
       { text: "Status V1", link: "/IMPLEMENTATION_STATUS" },
@@ -21,6 +23,7 @@ export default defineConfig({
         text: "Visão Geral",
         items: [
           { text: "Apresentação", link: "/" },
+          { text: "Simulador Live Interativo", link: "/demo" },
           { text: "Guia de Integração ChatGPT", link: "/CHATGPT_INTEGRATION" },
           { text: "Arquitetura do Sistema", link: "/ARCHITECTURE" },
           { text: "Status da Implementação V1", link: "/IMPLEMENTATION_STATUS" },

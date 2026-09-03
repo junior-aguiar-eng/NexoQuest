@@ -10,6 +10,9 @@ hero:
     alt: NexoQuiz
   actions:
     - theme: brand
+      text: Testar Simulador Live 🎮
+      link: /demo
+    - theme: alt
       text: Guia de Integração
       link: /CHATGPT_INTEGRATION
     - theme: alt
