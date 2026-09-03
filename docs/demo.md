@@ -11,12 +11,12 @@ title: Simulador Interativo Live — NexoQuiz
         Experimente o player sóbrio de avaliação do NexoQuiz com questões reais em Modo Estudo e Prova.
       </p>
     </div>
-    <a href="./demo.html" target="_blank" style="padding: 0.5rem 1rem; background: var(--vp-c-brand-1); color: #fff; border-radius: 8px; font-size: 0.875rem; font-weight: 600; text-decoration: none; display: inline-flex; align-items: center; gap: 0.5rem;">
+    <a href="./simulator.html" target="_blank" style="padding: 0.5rem 1rem; background: var(--vp-c-brand-1); color: #fff; border-radius: 8px; font-size: 0.875rem; font-weight: 600; text-decoration: none; display: inline-flex; align-items: center; gap: 0.5rem;">
       Abrir em Tela Cheia ↗
     </a>
   </div>
 
   <div style="width: 100%; height: 820px; border: 1px solid var(--vp-c-border); border-radius: 12px; overflow: hidden; box-shadow: 0 4px 20px rgba(0,0,0,0.15);">
-    <iframe src="./demo.html" style="width: 100%; height: 100%; border: none;"></iframe>
+    <iframe src="./simulator.html" style="width: 100%; height: 100%; border: none;"></iframe>
   </div>
 </div>
