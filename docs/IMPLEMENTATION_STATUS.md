@@ -47,7 +47,7 @@ Este documento registra o estado factual das fases de engenharia do NexoQuiz.
 - [x] **Fase 7** — Biblioteca Markdown (`gray-matter`, `unified/remark` AST, `MaterialIndexer`, SQLite FTS5, CLI `library:validate` e `library:index`)
 - [x] **Fase 8** — Tools MCP de biblioteca (`library_list_materials`, `library_get_outline`, `library_search`, `library_read_sections`)
 - [x] **Fase 9** — Planejamento de UMT e geração: protocolo do host (`quiz_plan_validate`, `quiz_plan_template`, validação pedagógica estrita)
-- [ ] **Fase 10** — `quiz_render` stateless e proteção do gabarito
+- [x] **Fase 10** — `quiz_render` stateless e proteção do gabarito (`opaqueGradingToken` AES-256-GCM, remoção de vazamento no `QuestionPublic`)
 - [ ] **Fase 11** — `quiz_grade_answer`
 - [ ] **Fase 12** — Integração de `widgetState`
 - [ ] **Fase 13** — SQLite e persistência local

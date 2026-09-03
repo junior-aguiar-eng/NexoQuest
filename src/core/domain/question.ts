@@ -77,6 +77,7 @@ export const QuestionPublicSchema = z.object({
   header: QuestionHeaderSchema,
   content: QuestionPublicContentSchema,
   interaction: QuestionInteractionSchema,
+  opaqueGradingToken: z.string().optional(),
 });
 export type QuestionPublic = z.infer<typeof QuestionPublicSchema>;
 
@@ -92,6 +93,13 @@ export const DistractorAnalysisMapSchema = z.object({
 });
 export type DistractorAnalysisMap = z.infer<typeof DistractorAnalysisMapSchema>;
 
+export interface DistractorAnalysisItem {
+  letter: AnswerLabel;
+  analysis: string;
+  isPlausible: boolean;
+  errorCategory?: string;
+}
+
 /**
  * Chave de correção e fundamentação interna (AnswerKey)
  */
@@ -101,8 +109,10 @@ export const AnswerKeySchema = z.object({
   legalBasis: z.string().min(3, "Indique o dispositivo legal/constitucional aplicável"),
   precedents: z.array(z.string()).default([]),
   doctrine: z.array(z.string()).default([]),
+  diagnosis: z.string().optional(),
   distractorAnalysis: DistractorAnalysisMapSchema,
   confidence: ConfidenceLevelSchema.optional(),
+  confidenceScore: z.number().optional(),
 });
 export type AnswerKey = z.infer<typeof AnswerKeySchema>;
 
