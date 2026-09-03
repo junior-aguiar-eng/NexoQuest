@@ -14,6 +14,19 @@
 
 ---
 
+<div align="center">
+
+### 🎮 [▶ Testar o Simulador Interativo Live](https://junior-aguiar-eng.github.io/NexoQuest/demo.html)
+
+Experimente o NexoQuiz diretamente no navegador — sem instalação, sem cadastro.
+Alterne entre **Modo Estudo** (com diagnóstico pedagógico e análise de distratores) e **Modo Prova** (com cronômetro e relatório analítico de desempenho).
+
+📚 [Documentação Completa](https://junior-aguiar-eng.github.io/NexoQuest/) · 🏛️ [Arquitetura do Sistema](https://junior-aguiar-eng.github.io/NexoQuest/ARCHITECTURE.html) · 🔗 [Guia de Integração ChatGPT](https://junior-aguiar-eng.github.io/NexoQuest/CHATGPT_INTEGRATION.html)
+
+</div>
+
+---
+
 ## 📌 Visão Geral
 
 O **NexoQuiz** é uma plataforma determinística e host-agnóstica de avaliação jurídica digital. Ele transforma apostilas canônicas em Markdown em simulados interativos de alto nível para carreiras jurídicas (ENAM, Magistratura, Ministério Público e Defensoria).
