@@ -37,20 +37,34 @@ export interface QuizUiActions {
   exitReview: () => void;
 }
 
+import { readHostWidgetState, writeHostWidgetState } from "../adapters/widget-state";
+
 export type QuizUiStore = QuizUiState & QuizUiActions;
+
+const initialSaved = readHostWidgetState();
+
+function notifySync(state: QuizUiState) {
+  writeHostWidgetState({
+    currentQuestionIndex: state.currentQuestionIndex,
+    mode: state.mode,
+    answers: state.answers,
+    reviewFlags: state.reviewFlags,
+    isCompleted: state.isCompleted,
+  });
+}
 
 export const useQuizUiStore = create<QuizUiStore>((set, get) => ({
   questions: BLOCK_1_LEGAL_QUESTIONS,
-  mode: "study",
-  currentQuestionIndex: 0,
-  answers: {},
-  reviewFlags: {},
-  isCompleted: false,
+  mode: initialSaved?.mode || "study",
+  currentQuestionIndex: initialSaved?.currentQuestionIndex ?? 0,
+  answers: initialSaved?.answers || {},
+  reviewFlags: initialSaved?.reviewFlags || {},
+  isCompleted: initialSaved?.isCompleted || false,
   activeReviewFilter: null,
   filteredQuestionIndices: null,
 
   setQuestions: (questions, mode = "study") => {
-    set({
+    const newState: Partial<QuizUiState> = {
       questions,
       mode,
       currentQuestionIndex: 0,
@@ -59,10 +73,15 @@ export const useQuizUiStore = create<QuizUiStore>((set, get) => ({
       isCompleted: false,
       activeReviewFilter: null,
       filteredQuestionIndices: null,
-    });
+    };
+    set(newState);
+    notifySync({ ...get(), ...newState } as QuizUiState);
   },
 
-  setMode: (mode) => set({ mode }),
+  setMode: (mode) => {
+    set({ mode });
+    notifySync(get());
+  },
 
   selectAnswer: (questionId, label) => {
     const { answers, mode } = get();
@@ -84,6 +103,7 @@ export const useQuizUiStore = create<QuizUiStore>((set, get) => ({
         },
       },
     });
+    notifySync(get());
   },
 
   setConfidence: (questionId, confidence) => {
@@ -100,6 +120,7 @@ export const useQuizUiStore = create<QuizUiStore>((set, get) => ({
         },
       },
     });
+    notifySync(get());
   },
 
   toggleReviewFlag: (questionId) => {
@@ -111,6 +132,7 @@ export const useQuizUiStore = create<QuizUiStore>((set, get) => ({
         [questionId]: !currentFlag,
       },
     });
+    notifySync(get());
   },
 
   confirmAnswer: (questionId, elapsedMs = 0) => {
@@ -128,6 +150,7 @@ export const useQuizUiStore = create<QuizUiStore>((set, get) => ({
         },
       },
     });
+    notifySync(get());
   },
 
   nextQuestion: () => {
@@ -141,6 +164,7 @@ export const useQuizUiStore = create<QuizUiStore>((set, get) => ({
       } else {
         set({ isCompleted: true });
       }
+      notifySync(get());
       return;
     }
 
@@ -149,6 +173,7 @@ export const useQuizUiStore = create<QuizUiStore>((set, get) => ({
     } else {
       set({ isCompleted: true });
     }
+    notifySync(get());
   },
 
   previousQuestion: () => {
@@ -159,18 +184,21 @@ export const useQuizUiStore = create<QuizUiStore>((set, get) => ({
       if (currentPos > 0) {
         set({ currentQuestionIndex: filteredQuestionIndices[currentPos - 1] });
       }
+      notifySync(get());
       return;
     }
 
     if (currentQuestionIndex > 0) {
       set({ currentQuestionIndex: currentQuestionIndex - 1 });
     }
+    notifySync(get());
   },
 
   goToQuestionIndex: (index) => {
     const { questions } = get();
     if (index >= 0 && index < questions.length) {
       set({ currentQuestionIndex: index });
+      notifySync(get());
     }
   },
 
@@ -184,6 +212,7 @@ export const useQuizUiStore = create<QuizUiStore>((set, get) => ({
       }
     }
     set({ answers: updatedAnswers, isCompleted: true });
+    notifySync(get());
   },
 
   resetQuiz: () => {
@@ -195,6 +224,7 @@ export const useQuizUiStore = create<QuizUiStore>((set, get) => ({
       activeReviewFilter: null,
       filteredQuestionIndices: null,
     });
+    notifySync(get());
   },
 
   startReview: (filter) => {
@@ -222,6 +252,7 @@ export const useQuizUiStore = create<QuizUiStore>((set, get) => ({
         filteredQuestionIndices: indices,
         currentQuestionIndex: indices[0],
       });
+      notifySync(get());
     }
   },
 
@@ -231,5 +262,6 @@ export const useQuizUiStore = create<QuizUiStore>((set, get) => ({
       filteredQuestionIndices: null,
       isCompleted: true,
     });
+    notifySync(get());
   },
 }));
