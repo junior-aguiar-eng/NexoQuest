@@ -54,4 +54,4 @@ Este documento registra o estado factual das fases de engenharia do NexoQuiz.
 - [x] **Fase 14** — Relatório final e revisão (`ResultsScreen` analítico, filtros de erro/revisão, cópia de diagnóstico)
 - [x] **Fase 15** — Limpeza do legado QuizHP (`createNexoQuizServer`, remoção de mini-games de 8MB, bundle enxuto e desacoplamento total)
 - [x] **Fase 16** — Hardening do MCP e do widget (`QuizErrorBoundary`, payload limits 512KB, rate limiting, sanitização e zero leakage)
-- [ ] **Fase 17** — Integração real no ChatGPT
+- [x] **Fase 17** — Integração real no ChatGPT (`CHATGPT_INTEGRATION.md`, prompt canônico do host, script E2E de validação e entrega V1)
