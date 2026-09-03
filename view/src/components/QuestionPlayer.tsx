@@ -86,6 +86,7 @@ export const QuestionPlayer: React.FC = () => {
           stats={statistics}
           onReviewErrors={() => store.startReview("errors")}
           onReviewFlagged={() => store.startReview("flagged")}
+          onReviewAll={() => store.startReview("all")}
           onReset={() => store.resetQuiz()}
         />
       </div>

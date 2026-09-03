@@ -40,7 +40,7 @@ describe("Segurança & Criptografia — opaqueGradingToken (Fase 10)", () => {
     const tamperedCiphertext = parts[2].slice(0, -4) + "AAAA";
     const tamperedToken = `${parts[0]}.${parts[1]}.${tamperedCiphertext}`;
 
-    assert.throws(() => decryptGradingToken(tamperedToken), /Unsupported state or unable to authenticate data|bad decrypt/i);
+    assert.throws(() => decryptGradingToken(tamperedToken), /falha de autenticação criptográfica|violado|unsupported state/i);
   });
 
   it("deve rejeitar token malformado sem partes válidas", () => {

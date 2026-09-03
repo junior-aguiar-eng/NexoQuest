@@ -1,10 +1,11 @@
-import React from "react";
+import React, { useState } from "react";
 import type { QuizStatistics } from "../../../src/core/domain/session";
 
 interface ResultsScreenProps {
   stats: QuizStatistics;
   onReviewErrors: () => void;
   onReviewFlagged: () => void;
+  onReviewAll: () => void;
   onReset: () => void;
 }
 
@@ -12,8 +13,11 @@ export const ResultsScreen: React.FC<ResultsScreenProps> = ({
   stats,
   onReviewErrors,
   onReviewFlagged,
+  onReviewAll,
   onReset,
 }) => {
+  const [copied, setCopied] = useState(false);
+
   const formatTime = (ms: number) => {
     const totalSeconds = Math.floor(ms / 1000);
     const mins = Math.floor(totalSeconds / 60);
@@ -24,6 +28,30 @@ export const ResultsScreen: React.FC<ResultsScreenProps> = ({
 
   const hasErrors = stats.totalAnswered - stats.totalCorrect > 0;
   const hasFlagged = stats.reviewFlagsCount > 0;
+
+  const handleCopyReport = () => {
+    const text = [
+      `📊 NEXOQUIZ — RELATÓRIO DE DESEMPENHO`,
+      `━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━`,
+      `• Acertos: ${stats.totalCorrect}/${stats.totalAnswered} (${stats.accuracyPercentage}%)`,
+      `• Tempo Total: ${formatTime(stats.totalTimeMs)}`,
+      `• Erros em Alta Confiança: ${stats.highConfidenceErrors}`,
+      `• Questões Marcadas para Revisão: ${stats.reviewFlagsCount}`,
+      `\n📈 Acurácia por Foco:`,
+      `  - Jurisprudência: ${stats.accuracyByFocus?.jurisprudence?.correct || 0}/${stats.accuracyByFocus?.jurisprudence?.total || 0}`,
+      `  - Lei Seca / Prazos: ${stats.accuracyByFocus?.statute?.correct || 0}/${stats.accuracyByFocus?.statute?.total || 0}`,
+      `  - Doutrina: ${stats.accuracyByFocus?.doctrine?.correct || 0}/${stats.accuracyByFocus?.doctrine?.total || 0}`,
+      `\n🎯 Acurácia por Dificuldade:`,
+      `  - Difíceis: ${stats.accuracyByDifficulty?.hard?.correct || 0}/${stats.accuracyByDifficulty?.hard?.total || 0}`,
+      `  - Médias: ${stats.accuracyByDifficulty?.medium?.correct || 0}/${stats.accuracyByDifficulty?.medium?.total || 0}`,
+      `  - Fáceis: ${stats.accuracyByDifficulty?.easy?.correct || 0}/${stats.accuracyByDifficulty?.easy?.total || 0}`,
+    ].join("\n");
+
+    navigator.clipboard.writeText(text).then(() => {
+      setCopied(true);
+      setTimeout(() => setCopied(false), 2500);
+    });
+  };
 
   return (
     <div className="w-full max-w-2xl bg-white dark:bg-neutral-900 border border-neutral-200 dark:border-neutral-800 rounded-xl p-6 sm:p-8 shadow-xs flex flex-col gap-6">
@@ -125,34 +153,52 @@ export const ResultsScreen: React.FC<ResultsScreenProps> = ({
       </div>
 
       {/* Ações de Revisão e Reinício */}
-      <div className="flex flex-wrap items-center justify-end gap-3 pt-2 border-t border-neutral-100 dark:border-neutral-800">
-        {hasErrors && (
-          <button
-            type="button"
-            onClick={onReviewErrors}
-            className="px-4 py-2 rounded-lg text-xs font-semibold bg-rose-50 dark:bg-rose-950/40 text-rose-700 dark:text-rose-300 border border-rose-300 dark:border-rose-800 hover:bg-rose-100 cursor-pointer"
-          >
-            Rever Erros ({stats.totalAnswered - stats.totalCorrect})
-          </button>
-        )}
-
-        {hasFlagged && (
-          <button
-            type="button"
-            onClick={onReviewFlagged}
-            className="px-4 py-2 rounded-lg text-xs font-semibold bg-amber-50 dark:bg-amber-950/40 text-amber-700 dark:text-amber-300 border border-amber-300 dark:border-amber-800 hover:bg-amber-100 cursor-pointer"
-          >
-            Rever Marcadas ({stats.reviewFlagsCount})
-          </button>
-        )}
-
+      <div className="flex flex-wrap items-center justify-between gap-3 pt-2 border-t border-neutral-100 dark:border-neutral-800">
         <button
           type="button"
-          onClick={onReset}
-          className="px-4 py-2 rounded-lg text-xs font-semibold bg-neutral-900 hover:bg-neutral-800 text-white dark:bg-neutral-100 dark:hover:bg-neutral-200 dark:text-neutral-900 cursor-pointer"
+          onClick={handleCopyReport}
+          className="px-3 py-1.5 rounded-lg text-xs font-medium text-neutral-600 dark:text-neutral-400 hover:text-neutral-900 dark:hover:text-neutral-100 border border-neutral-200 dark:border-neutral-800 cursor-pointer"
         >
-          Reiniciar Ciclo
+          {copied ? "✓ Copiado!" : "📋 Copiar Resumo"}
         </button>
+
+        <div className="flex flex-wrap items-center gap-2">
+          {hasErrors && (
+            <button
+              type="button"
+              onClick={onReviewErrors}
+              className="px-3.5 py-1.5 rounded-lg text-xs font-semibold bg-rose-50 dark:bg-rose-950/40 text-rose-700 dark:text-rose-300 border border-rose-300 dark:border-rose-800 hover:bg-rose-100 cursor-pointer"
+            >
+              Rever Erros ({stats.totalAnswered - stats.totalCorrect})
+            </button>
+          )}
+
+          {hasFlagged && (
+            <button
+              type="button"
+              onClick={onReviewFlagged}
+              className="px-3.5 py-1.5 rounded-lg text-xs font-semibold bg-amber-50 dark:bg-amber-950/40 text-amber-700 dark:text-amber-300 border border-amber-300 dark:border-amber-800 hover:bg-amber-100 cursor-pointer"
+            >
+              Rever Marcadas ({stats.reviewFlagsCount})
+            </button>
+          )}
+
+          <button
+            type="button"
+            onClick={onReviewAll}
+            className="px-3.5 py-1.5 rounded-lg text-xs font-semibold bg-neutral-100 dark:bg-neutral-800 text-neutral-700 dark:text-neutral-300 border border-neutral-300 dark:border-neutral-700 hover:bg-neutral-200 cursor-pointer"
+          >
+            Rever Todas
+          </button>
+
+          <button
+            type="button"
+            onClick={onReset}
+            className="px-3.5 py-1.5 rounded-lg text-xs font-semibold bg-neutral-900 hover:bg-neutral-800 text-white dark:bg-neutral-100 dark:hover:bg-neutral-200 dark:text-neutral-900 cursor-pointer"
+          >
+            Reiniciar Ciclo
+          </button>
+        </div>
       </div>
     </div>
   );

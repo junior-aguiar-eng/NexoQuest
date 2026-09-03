@@ -66,11 +66,20 @@ export function decryptGradingToken(
   const authTag = Buffer.from(authTagB64, "base64url");
   const encrypted = Buffer.from(encryptedB64, "base64url");
 
+  if (iv.length !== 12 || authTag.length !== 16) {
+    throw new Error("Token de gabarito inválido ou corrompido (tamanho de cabeçalho incorreto).");
+  }
+
   const decipher = crypto.createDecipheriv("aes-256-gcm", key, iv);
   decipher.setAuthTag(authTag);
 
-  let decrypted = decipher.update(encrypted.toString("base64"), "base64", "utf8");
-  decrypted += decipher.final("utf8");
+  let decrypted: string;
+  try {
+    decrypted = decipher.update(encrypted.toString("base64"), "base64", "utf8");
+    decrypted += decipher.final("utf8");
+  } catch {
+    throw new Error("Token de gabarito inválido ou violado (falha de autenticação criptográfica).");
+  }
 
   const payload = JSON.parse(decrypted) as GradingPayload;
 
