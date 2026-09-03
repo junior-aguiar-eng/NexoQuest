@@ -18,6 +18,7 @@ import { Timer } from "./Timer";
 import { ConfidenceSelector } from "./ConfidenceSelector";
 import { ReviewFlag } from "./ReviewFlag";
 import { ResultsScreen } from "./ResultsScreen";
+import { CorrectionPanel } from "./CorrectionPanel";
 import { useKeyboardShortcuts } from "../hooks/useKeyboardShortcuts";
 import { useTimer } from "../hooks/useTimer";
 
@@ -249,20 +250,12 @@ export const QuestionPlayer: React.FC = () => {
               )}
 
               {isStudyMode ? (
-                !isConfirmed ? (
+                !isConfirmed && (
                   <ConfirmAnswerButton
                     onConfirm={handleConfirm}
                     disabled={!canConfirm}
                     isConfirmed={isConfirmed}
                   />
-                ) : (
-                  <button
-                    type="button"
-                    onClick={handleNext}
-                    className="px-5 py-2 rounded-lg text-xs font-semibold bg-neutral-900 hover:bg-neutral-800 text-white dark:bg-neutral-100 dark:hover:bg-neutral-200 dark:text-neutral-900 cursor-pointer shadow-xs"
-                  >
-                    {isLastQuestion ? "Ver Resultado Final →" : "Próxima Questão →"}
-                  </button>
                 )
               ) : (
                 /* Modo Prova */
@@ -288,43 +281,14 @@ export const QuestionPlayer: React.FC = () => {
             </div>
           </div>
 
-          {/* Feedback Pedagógico Imediato (Modo Estudo) */}
-          {isStudyMode && isConfirmed && (
-            <section
-              aria-live="polite"
-              className={`p-5 rounded-lg border flex flex-col gap-3 transition-opacity duration-200 ${
-                isCorrect
-                  ? "bg-emerald-50/70 dark:bg-emerald-950/20 border-emerald-300 dark:border-emerald-800/60 text-emerald-900 dark:text-emerald-100"
-                  : "bg-rose-50/70 dark:bg-rose-950/20 border-rose-300 dark:border-rose-800/60 text-rose-900 dark:text-rose-100"
-              }`}
-            >
-              <div className="flex items-center gap-2 font-semibold text-sm">
-                <span className="text-base">{isCorrect ? "✓" : "✗"}</span>
-                <span>
-                  {isCorrect
-                    ? "Resposta Correta"
-                    : `Resposta Incorreta (Gabarito: Alternativa ${currentQuestion.correctAnswer})`}
-                </span>
-              </div>
-
-              {!isCorrect && currentQuestion.diagnosis && (
-                <div className="text-xs sm:text-sm leading-relaxed p-3 rounded bg-rose-100/60 dark:bg-rose-950/50 border border-rose-200 dark:border-rose-900/60 text-rose-950 dark:text-rose-200 font-medium">
-                  <strong>Diagnóstico do Equívoco: </strong>
-                  {currentQuestion.diagnosis}
-                </div>
-              )}
-
-              <div className="text-xs sm:text-sm leading-relaxed text-neutral-700 dark:text-neutral-300">
-                <strong className="font-semibold text-neutral-900 dark:text-neutral-100">Fundamentação: </strong>
-                {currentQuestion.legalReasoning}
-              </div>
-
-              {currentQuestion.legalBasis && (
-                <div className="text-xs text-neutral-500 dark:text-neutral-400 font-mono">
-                  Base Legal: {currentQuestion.legalBasis}
-                </div>
-              )}
-            </section>
+          {/* Painel Pedagógico Aprofundado com Accordions (Fase 6) */}
+          {isStudyMode && isConfirmed && currentAnswer?.selectedAnswer && (
+            <CorrectionPanel
+              question={currentQuestion}
+              selectedAnswer={currentAnswer.selectedAnswer}
+              onNext={handleNext}
+              isLastQuestion={isLastQuestion}
+            />
           )}
 
         </main>
