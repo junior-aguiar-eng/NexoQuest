@@ -26,7 +26,7 @@ async function runE2EVerification() {
   console.log("▶ 1. Indexação da Biblioteca Markdown...");
   const indexer = new MaterialIndexer(":memory:");
   const indexedResult = indexer.indexDirectory(FIXTURES_DIR);
-  console.log(`   ✓ ${indexedResult.totalFiles} materiais didáticos (${indexedResult.indexedSections} seções) indexados no SQLite FTS5.`);
+  console.log(`   ✓ ${indexedResult.totalIndexed} materiais didáticos indexados no SQLite FTS5.`);
 
   const searchRepo = new MaterialRepository(indexer.getDatabase());
   const sessionRepo = new SessionRepository(indexer.getDatabase());

@@ -1,12 +1,12 @@
 {
-  "name": "quizhp",
+  "name": "nexoquiz",
   "version": "1.0.0",
-  "description": "Interactive quiz MCP server with mini-game templates",
+  "description": "Engine de questões jurídicas interativas para ChatGPT MCP e Standalone",
   "type": "module",
   "main": "./dist/server/index.js",
   "types": "./dist/server/index.d.ts",
   "bin": {
-    "quizhp": "./dist/server/stdio.js"
+    "nexoquiz": "./dist/server/index.js"
   },
   "exports": {
     ".": {
@@ -34,6 +34,7 @@
     "build:worker": "npm run build:view && node scripts/build-worker-bundle.mjs && tsc",
     "typecheck": "tsc --noEmit",
     "test": "tsx --test tests/**/*.test.ts",
+    "verify:e2e": "tsx scripts/verify-e2e.ts",
     "library:validate": "tsx scripts/validate-library.ts",
     "library:index": "tsx scripts/index-library.ts",
     "clean": "rm -rf dist"

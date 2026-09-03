@@ -6,3 +6,7 @@ dist/
 src/worker-bundle.ts
 .env
 .env.*
+data/*.db
+data/*.db-journal
+data/*.db-wal
+data/*.db-shm
