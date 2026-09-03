@@ -50,7 +50,7 @@ Este documento registra o estado factual das fases de engenharia do NexoQuiz.
 - [x] **Fase 10** — `quiz_render` stateless e proteção do gabarito (`opaqueGradingToken` AES-256-GCM, remoção de vazamento no `QuestionPublic`)
 - [x] **Fase 11** — `quiz_grade_answer` (correção determinística stateless, diagnóstico pedagógico, fundamentação e análise de distratores)
 - [x] **Fase 12** — Integração de `widgetState` (sincronização com ChatGPT Apps SDK e persistência local com debounce)
-- [ ] **Fase 13** — SQLite e persistência local
+- [x] **Fase 13** — SQLite e persistência local (`SessionRepository`, `quiz_sessions`, `session_answers`, métricas por disciplina)
 - [ ] **Fase 14** — Relatório final e revisão
 - [ ] **Fase 15** — Limpeza do legado QuizHP
 - [ ] **Fase 16** — Hardening do MCP e do widget
