@@ -39,7 +39,7 @@ Este documento registra o estado factual das fases de engenharia do NexoQuiz.
 
 - [x] **Fase 0** — Clone privado independente, baseline e congelamento do upstream
 - [x] **Fase 1** — Guardrails do projeto (`AGENTS.md`, `ARCHITECTURE.md`, `TEST_MATRIX.md`, ADRs 001-010)
-- [ ] **Fase 2** — Substituição visual mínima do GameRuntime (`QuestionPlayer`)
+- [x] **Fase 2** — Substituição visual mínima do GameRuntime (`QuestionPlayer`, `AlternativeList`, `ConfirmAnswerButton`)
 - [ ] **Fase 3** — Contratos de domínio + Zod
 - [ ] **Fase 4** — Engine determinística de bloco e validação FGV
 - [ ] **Fase 5** — Engine de sessão no frontend
