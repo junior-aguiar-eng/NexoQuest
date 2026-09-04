@@ -3,7 +3,7 @@ import { unified } from "unified";
 import remarkParse from "remark-parse";
 import { visit } from "unist-util-visit";
 import type { Heading, Root } from "mdast";
-import { MaterialFrontmatter, MaterialFrontmatterSchema } from "./frontmatter-schema";
+import { MaterialFrontmatter, MaterialFrontmatterSchema } from "./frontmatter-schema.js";
 
 export interface ParsedSection {
   sectionId: string;

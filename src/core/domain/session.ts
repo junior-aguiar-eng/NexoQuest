@@ -3,8 +3,8 @@ import {
   DifficultySchema,
   FocusSchema,
   QuizModeSchema,
-} from "./primitives";
-import { QuestionSubmissionSchema } from "./correction";
+} from "./primitives.js";
+import { QuestionSubmissionSchema } from "./correction.js";
 
 export const QuizSessionStatusSchema = z.enum(["in_progress", "completed"]);
 export type QuizSessionStatus = z.infer<typeof QuizSessionStatusSchema>;

@@ -29,6 +29,8 @@
     "build:server": "tsc",
     "build:view": "vite build --config view/vite.config.ts",
     "dev": "tsx watch src/index.ts",
+    "dev:view": "vite --config view/vite.config.ts",
+    "preview:view": "vite preview --config view/vite.config.ts",
     "start": "node dist/server/index.js",
     "start:stdio": "node dist/server/stdio.js",
     "build:worker": "npm run build:view && node scripts/build-worker-bundle.mjs && tsc",
@@ -37,6 +39,8 @@
     "verify:e2e": "tsx scripts/verify-e2e.ts",
     "library:validate": "tsx scripts/validate-library.ts",
     "library:index": "tsx scripts/index-library.ts",
+    "library:import": "tsx scripts/import-nexojuris.ts",
+    "cli": "tsx src/cli/index.ts",
     "clean": "rm -rf dist",
     "docs:dev": "vitepress dev docs",
     "docs:build": "vitepress build docs",
@@ -73,8 +77,10 @@
     "zustand": "^5.0.3"
   },
   "overrides": {
-    "qs": "^6.14.0",
-    "body-parser": "^1.20.3"
+    "qs": "^6.16.0",
+    "body-parser": "^1.20.6",
+    "esbuild": "^0.25.0",
+    "vite": "^6.4.3"
   },
   "license": "MIT"
 }

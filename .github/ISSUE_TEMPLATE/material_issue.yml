@@ -1,0 +1,45 @@
+name: 📖 Erro ou Atualização em Material Jurídico
+description: Reportar divergência legal, atualização jurisprudencial ou erro textual em uma apostila Markdown da biblioteca.
+title: "[Material]: "
+labels: ["content", "library"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Use este formulário para sugerir correções, atualizações de jurisprudência (STF/STJ) ou emendas legislativas nas apostilas canônicas da pasta `library/`.
+
+  - type: input
+    id: material_path
+    attributes:
+      label: Caminho ou ID do Material
+      description: Ex: `library/direito-processual-civil/recursos.md` ou `processual-civil-recursos`
+      placeholder: "library/direito-constitucional/controle-concentrado.md"
+    validations:
+      required: true
+
+  - type: dropdown
+    id: issue_type
+    attributes:
+      label: Natureza do Apontamento
+      options:
+        - "Atualização Jurisprudencial (STF / STJ / CNJ)"
+        - "Alteração / Revogação Legislativa"
+        - "Divergência Doutrinária Relevante"
+        - "Erro de Digitação / Formatação Markdown / Frontmatter"
+        - "Outro"
+    validations:
+      required: true
+
+  - type: textarea
+    id: explanation
+    attributes:
+      label: Detalhamento do Ponto
+      description: Explique o trecho específico que requer atualização e indique a fundamentação jurídica (número de artigo de lei, súmula, tese repetitiva ou ADI/ADC).
+    validations:
+      required: true
+
+  - type: textarea
+    id: suggested_text
+    attributes:
+      label: Sugestão de Nova Redação (opcional)
+      description: Se tiver uma proposta de redação corrigida para o trecho, inclua aqui.

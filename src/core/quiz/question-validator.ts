@@ -1,5 +1,5 @@
-import { AnswerLabel } from "../domain/primitives";
-import { QuestionAlternative, QuestionInternal } from "../domain/question";
+import { AnswerLabel } from "../domain/primitives.js";
+import { QuestionAlternative, QuestionInternal } from "../domain/question.js";
 
 export interface QuestionValidationResult {
   isValid: boolean;

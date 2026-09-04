@@ -1,0 +1,41 @@
+name: 💡 Proposta de Funcionalidade ou Melhoria
+description: Sugerir uma nova ferramenta, melhoria no player de prova ou aprimoramento no fluxo de avaliação.
+title: "[Sugestão]: "
+labels: ["enhancement", "proposal"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Agradecemos sua proposta! Antes de enviar, certifique-se de que a proposta respeita os princípios fundamentais do projeto (ex: interface sóbria sem gamificação lúdica, sem chamadas de LLM no backend e independência de host).
+
+  - type: textarea
+    id: problem
+    attributes:
+      label: Qual problema ou necessidade esta funcionalidade resolve?
+      description: Uma descrição clara do cenário ou limitação atual.
+    validations:
+      required: true
+
+  - type: textarea
+    id: solution
+    attributes:
+      label: Solução Proposta
+      description: Como você imagina o funcionamento ideal desta funcionalidade?
+    validations:
+      required: true
+
+  - type: textarea
+    id: alternatives
+    attributes:
+      label: Alternativas Consideradas
+      description: Quais outras soluções ou contornos foram avaliados?
+
+  - type: checkboxes
+    id: invariants_check
+    attributes:
+      label: Conformidade com as Invariantes do NexoQuiz
+      options:
+        - label: "Confirmo que a proposta não introduz gamificação lúdica (sons, moedas, confetes, minigames)."
+          required: true
+        - label: "Confirmo que o núcleo da proposta preserva o backend host-agnostic e sem chamadas diretas de IA."
+          required: true

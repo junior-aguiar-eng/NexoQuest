@@ -1,7 +1,7 @@
 import { DatabaseSync } from "node:sqlite";
 import fs from "node:fs";
 import path from "node:path";
-import { AnswerLabel, ConfidenceLevel, Difficulty, Focus, QuestionFormat, QuizMode } from "../domain/primitives";
+import { AnswerLabel, ConfidenceLevel, Difficulty, Focus, QuestionFormat, QuizMode } from "../domain/primitives.js";
 
 export interface SessionAnswerRecord {
   questionId: string;

@@ -55,3 +55,5 @@ Este documento registra o estado factual das fases de engenharia do NexoQuiz.
 - [x] **Fase 15** — Limpeza do legado QuizHP (`createNexoQuizServer`, remoção de mini-games de 8MB, bundle enxuto e desacoplamento total)
 - [x] **Fase 16** — Hardening do MCP e do widget (`QuizErrorBoundary`, payload limits 512KB, rate limiting, sanitização e zero leakage)
 - [x] **Fase 17** — Integração real no ChatGPT (`CHATGPT_INTEGRATION.md`, prompt canônico do host, script E2E de validação e entrega V1)
+- [x] **Extensões v1.0.0** — Terminal TUI Offline (`npm run cli`), Ingestão de Apostilas (`scripts/import-nexojuris.ts` + Skill), Padrões de Comunidade (Templates, Conduta, Segurança, Contribuição) e Zero Vulnerabilidades.
+

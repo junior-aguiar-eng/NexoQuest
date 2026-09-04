@@ -8,7 +8,7 @@ import {
   QuestionFormatSchema,
   QuizMode,
   QuizModeSchema,
-} from "./primitives";
+} from "./primitives.js";
 
 /**
  * Item individual de alternativa A–E

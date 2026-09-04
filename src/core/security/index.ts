@@ -1,1 +1,1 @@
-export * from "./crypto-token";
+export * from "./crypto-token.js";

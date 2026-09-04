@@ -2,8 +2,8 @@ import { z } from "zod";
 import {
   AnswerLabelSchema,
   ConfidenceLevelSchema,
-} from "./primitives";
-import { DistractorAnalysisMapSchema } from "./question";
+} from "./primitives.js";
+import { DistractorAnalysisMapSchema } from "./question.js";
 
 /**
  * Submissão de resposta do candidato para uma questão

@@ -1,0 +1,10 @@
+{
+  "mcpServers": {
+    "nexoquiz": {
+      "command": "node",
+      "args": [
+        "c:/Users/Boni Jr/.antigravity-ide/quizhp-mcp/dist/server/stdio.js"
+      ]
+    }
+  }
+}

@@ -1,0 +1,74 @@
+name: 🐛 Relatório de Bug Técnico
+description: Reportar um erro ou comportamento inesperado no NexoQuiz (Core, MCP ou Player React).
+title: "[Bug]: "
+labels: ["bug", "triage"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Obrigado por relatar um problema! Por favor, forneça as informações abaixo para nos ajudar a reproduzir e solucionar o bug.
+        *Se você encontrou uma falha de segurança (ex: vazamento de gabarito ou criptografia), consulte nossa [Política de Segurança](https://github.com/junior-aguiar-eng/NexoQuest/blob/main/SECURITY.md).*
+
+  - type: dropdown
+    id: component
+    attributes:
+      label: Componente Afetado
+      description: Onde o problema foi observado?
+      options:
+        - "Core / Domínio / Validadores Zod"
+        - "MCP Server / Ferramentas de Quiz & Biblioteca"
+        - "QuestionPlayer (Widget React / Apps SDK)"
+        - "Biblioteca Markdown / Parser / FTS5"
+        - "Persistência / SQLite Standalone"
+        - "Outro / Documentação"
+    validations:
+      required: true
+
+  - type: textarea
+    id: description
+    attributes:
+      label: Descrição do Problema
+      description: Uma explicação clara e concisa do que aconteceu de errado.
+    validations:
+      required: true
+
+  - type: textarea
+    id: reproduction
+    attributes:
+      label: Passos para Reproduzir
+      description: Como podemos reproduzir o comportamento observado?
+      placeholder: |
+        1. Executar o comando '...'
+        2. Chamar a ferramenta MCP '...' com os parâmetros '...'
+        3. Clicar em '...'
+        4. Observar o erro.
+    validations:
+      required: true
+
+  - type: textarea
+    id: expected
+    attributes:
+      label: Comportamento Esperado
+      description: O que você esperava que acontecesse?
+    validations:
+      required: true
+
+  - type: textarea
+    id: logs
+    attributes:
+      label: Logs ou Mensagens de Erro
+      description: Cole aqui logs do terminal, erros do console ou stacktraces.
+      render: shell
+
+  - type: dropdown
+    id: environment
+    attributes:
+      label: Ambiente de Execução
+      options:
+        - "ChatGPT (Apps SDK / MCP)"
+        - "Node.js Local (Standalone HTTP/Stdio)"
+        - "Navegador Web / Vite Demo"
+        - "Cloudflare Workers"
+        - "Testes Automatizados (npm run test)"
+    validations:
+      required: true

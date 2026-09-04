@@ -1,5 +1,5 @@
-import { Difficulty, Focus } from "../domain/primitives";
-import { QuizStatistics } from "../domain/session";
+import { Difficulty, Focus } from "../domain/primitives.js";
+import { QuizStatistics } from "../domain/session.js";
 
 export interface AnswerItemForCalculation {
   questionId: string;

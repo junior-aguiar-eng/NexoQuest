@@ -1,6 +1,6 @@
-import { AnswerLabel, ConfidenceLevel } from "../domain/primitives";
-import { QuestionCorrection, QuestionCorrectionSchema } from "../domain/correction";
-import { decryptGradingToken } from "../security/crypto-token";
+import { AnswerLabel, ConfidenceLevel } from "../domain/primitives.js";
+import { QuestionCorrection, QuestionCorrectionSchema } from "../domain/correction.js";
+import { decryptGradingToken } from "../security/crypto-token.js";
 
 export interface GradeAnswerInput {
   opaqueGradingToken: string;

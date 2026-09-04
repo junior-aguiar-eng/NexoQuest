@@ -162,6 +162,16 @@ nexoquiz/
 
 ---
 
+## 🤝 Comunidade e Governança
+
+* 📘 [Guia de Contribuição](CONTRIBUTING.md) — Diretrizes para envio de código, testes e materiais canônicos.
+* 📜 [Código de Conduta](CODE_OF_CONDUCT.md) — Nossos padrões éticos e compromisso de respeito comunitário.
+* 🔒 [Política de Segurança](SECURITY.md) — Divulgação responsável de vulnerabilidades e integridade criptográfica.
+* 📋 [Registro de Alterações (Changelog)](CHANGELOG.md) — Histórico de versões e notas de lançamento (SemVer).
+
+---
+
 ## 📄 Licença
 
 Distribuído sob a licença MIT. Consulte `LICENSE` para mais detalhes.
+

@@ -38,5 +38,42 @@ export function createNexoQuizServer(config: NexoQuizServerConfig): McpServer {
   // 5. Ferramentas de Histórico e Persistência Local (Fase 13)
   registerHistoryTools(server, config.sessionRepo);
 
+  // 6. Recurso Canônico MCP (Permite que clientes descubram o catálogo via resources/list)
+  server.resource(
+    "library-catalog",
+    "nexoquiz://library/catalog",
+    async () => {
+      const materials = config.searchRepo.listMaterials();
+      return {
+        contents: [
+          {
+            uri: "nexoquiz://library/catalog",
+            mimeType: "application/json",
+            text: JSON.stringify(materials, null, 2),
+          },
+        ],
+      };
+    }
+  );
+
+  // 7. Prompt Canônico MCP (Permite que clientes descubram instruções do host via prompts/list)
+  server.prompt(
+    "gerar-simulado-fgv",
+    "Prompt de instrução para o Host gerar questões jurídicas no formato estrito FGV / ENAM",
+    async () => {
+      return {
+        messages: [
+          {
+            role: "user",
+            content: {
+              type: "text",
+              text: "Gere um simulado jurídico com 5 questões inéditas no formato FGV/ENAM, consultando a biblioteca com library_read_sections, validando o plano com quiz_plan_validate e renderizando via quiz_render.",
+            },
+          },
+        ],
+      };
+    }
+  );
+
   return server;
 }

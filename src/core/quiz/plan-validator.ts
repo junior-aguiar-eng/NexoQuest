@@ -1,6 +1,6 @@
-import { QuizPlan } from "../domain/quiz-plan";
-import { validateAnswerRotation } from "./answer-rotation";
-import { validateBlockRules, BlockRuleOptions } from "./block-rules";
+import { QuizPlan } from "../domain/quiz-plan.js";
+import { validateAnswerRotation } from "./answer-rotation.js";
+import { validateBlockRules, BlockRuleOptions } from "./block-rules.js";
 
 export interface PlanValidationReport {
   isValid: boolean;

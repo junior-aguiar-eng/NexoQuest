@@ -1,6 +1,6 @@
 import { DatabaseSync } from "node:sqlite";
-import { MaterialFrontmatter } from "./frontmatter-schema";
-import { OutlineNode, ParsedSection } from "./markdown-parser";
+import { MaterialFrontmatter } from "./frontmatter-schema.js";
+import { OutlineNode, ParsedSection } from "./markdown-parser.js";
 
 export interface MaterialSummary {
   id: string;

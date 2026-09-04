@@ -4,8 +4,8 @@ import {
   DifficultySchema,
   FocusSchema,
   QuestionFormatSchema,
-} from "./primitives";
-import { UMTDefinitionSchema } from "./umt";
+} from "./primitives.js";
+import { UMTDefinitionSchema } from "./umt.js";
 
 /**
  * Slot individual planejado para uma questão dentro de um bloco

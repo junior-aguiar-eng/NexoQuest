@@ -1,7 +1,7 @@
 import { DatabaseSync } from "node:sqlite";
 import fs from "node:fs";
 import path from "node:path";
-import { parseMarkdownMaterial, ParsedMaterial } from "./markdown-parser";
+import { parseMarkdownMaterial, ParsedMaterial } from "./markdown-parser.js";
 
 export class MaterialIndexer {
   private db: DatabaseSync;
