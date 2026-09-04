@@ -8,7 +8,7 @@ A segurança e a integridade determinística das avaliações no **NexoQuiz** s�
 
 | Versão | Suporte a Correções de Segurança |
 | :--- | :--- |
-| **1.x (Atual)** | ✅ Suportada ativamente |
+| **1.x (Atual - v1.0.2)** | ✅ Suportada ativamente |
 | < 1.0 | ❌ Não suportada |
 
 ---
@@ -18,7 +18,7 @@ A segurança e a integridade determinística das avaliações no **NexoQuiz** s�
 Agradecemos relatórios de vulnerabilidade especialmente nas seguintes áreas:
 
 1. **Envelope Criptográfico (`opaqueGradingToken`)**:
-   - Falhas na autenticação AES-256-GCM que permitam falsificação de gabarito, adulteração de chave ou decodificação sem a chave mestra do servidor.
+   - Falhas na autenticação AES-256-GCM com derivação de chave SHA-256 KDF que permitam falsificação de gabarito, adulteração de chave ou decodificação sem a chave mestra do servidor.
    - Replay attacks ou bypass na validação de expiração e integridade do token.
 2. **Separação de Contratos (`QuestionInternal` vs `QuestionPublic`)**:
    - Vazamento de `correctAnswer`, `legalReasoning` ou análise de distratores no payload público trafegado para o cliente/Apps SDK.

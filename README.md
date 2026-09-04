@@ -2,11 +2,11 @@
 
 <div align="center">
 
-![TypeScript](https://img.shields.io/badge/TypeScript-5.7-blue?logo=typescript&logoColor=white)
-![Testes](https://img.shields.io/badge/Testes-54%2F54%20Passando-brightgreen)
+![TypeScript](https://img.shields.io/badge/TypeScript-5.9-blue?logo=typescript&logoColor=white)
+![Testes](https://img.shields.io/badge/Testes-57%2F57%20Passando-brightgreen)
 ![MCP](https://img.shields.io/badge/Protocolo-MCP%20%2B%20Apps%20SDK-purple)
 ![Licença](https://img.shields.io/badge/Licen%C3%A7a-MIT-green)
-![Status](https://img.shields.io/badge/Vers%C3%A3o-1.0.0%20(V1%20Conclu%C3%ADda)-success)
+![Status](https://img.shields.io/badge/Vers%C3%A3o-1.0.2%20(V1%20Conclu%C3%ADda)-success)
 
 **Engine de Questões Jurídicas Interativas para Magistratura e ENAM via Model Context Protocol (MCP) e ChatGPT Apps SDK**
 
@@ -106,7 +106,7 @@ npm install
 
 ### 3. Execução dos Testes e Validações
 ```bash
-# Executar a suíte completa de 54 testes unitários e de integração
+# Executar a suíte completa de 57 testes unitários e de integração
 npm test
 
 # Executar a verificação End-to-End da jornada do quiz
@@ -116,7 +116,13 @@ npm run verify:e2e
 npm run typecheck
 ```
 
-### 4. Iniciar o Servidor MCP
+### 4. Executar o Terminal TUI Offline
+```bash
+# Iniciar a interface de linha de comando para simulados e gestão do acervo
+npm run cli
+```
+
+### 5. Iniciar o Servidor MCP
 ```bash
 # Compilar o widget React
 npm run build:view
@@ -126,7 +132,7 @@ npm start
 ```
 *O endpoint MCP estará escutando em `http://localhost:3001/mcp`.*
 
-### 5. Iniciar o Portal de Documentação (VitePress)
+### 6. Iniciar o Portal de Documentação (VitePress)
 ```bash
 npm run docs:dev
 ```
@@ -144,20 +150,21 @@ nexoquiz/
 │   │   ├── library/           # Parser Markdown AST e Indexador SQLite FTS5
 │   │   ├── quiz/              # Validadores FGV, rotação e serviço de correção
 │   │   ├── persistence/       # Repositório SQLite nativo de sessões e métricas
-│   │   └── security/          # Criptografia AES-256-GCM (opaqueGradingToken)
+│   │   └── security/          # Criptografia AES-256-GCM com SHA-256 KDF (opaqueGradingToken)
 │   ├── adapters/mcp/          # Registro de ferramentas MCP
+│   ├── cli/                   # Interface TUI interativa para terminal
 │   ├── nexoquiz-server.ts     # Fábrica unificada do servidor MCP
 │   ├── index.ts               # Servidor HTTP Express com Streamable MCP
 │   └── stdio.ts               # Ponto de entrada stdio para clientes desktop
-├── view/                      # Frontend React sóbrio (ChatGPT Apps SDK)
+├── view/                      # Frontend React sóbrio (ChatGPT Apps SDK & Standalone)
 │   ├── src/
-│   │   ├── components/        # QuestionPlayer, AlternativeList, CorrectionPanel, ResultsScreen
+│   │   ├── components/        # QuestionPlayer, AlternativeList, CorrectionPanel, ResultsScreen, HubHeader, SimuladosTab, LibraryTab, MetricsTab
 │   │   ├── store/             # Zustand store sincronizado com widgetState
-│   │   └── QuizApp.tsx        # Container com ErrorBoundary e tema automático
+│   │   └── QuizApp.tsx        # Container com ErrorBoundary, tema automático e hidratação dinâmica
 │   └── vite.config.ts         # Configuração de build para bundle HTML único
 ├── library/                   # Apostilas canônicas em Markdown (.md)
 ├── docs/                      # Documentação completa, ADRs 001-010 e Guias
-└── tests/                     # 54 testes automatizados de unidade, segurança e integração
+└── tests/                     # 57 testes automatizados de unidade, segurança e integração
 ```
 
 ---

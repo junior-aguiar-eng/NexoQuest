@@ -36,7 +36,7 @@ Você pode colaborar de diversas maneiras:
 ## 3. Fluxo de Desenvolvimento
 
 ### 3.1 Pré-requisitos
-* **Node.js**: versão 20 LTS ou superior.
+* **Node.js**: versão 22 LTS ou superior.
 * **npm**: versão 10 ou superior.
 * **Git**.
 
@@ -52,6 +52,7 @@ npm install
 # 3. Valide a integridade inicial
 npm run typecheck
 npm run test
+npm run verify:e2e
 npm run build
 ```
 
