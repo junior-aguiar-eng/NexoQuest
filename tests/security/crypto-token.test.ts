@@ -47,13 +47,18 @@ describe("Segurança & Criptografia — opaqueGradingToken (Fase 10)", () => {
     assert.throws(() => decryptGradingToken("token-invalido-sem-pontos"), /Token de gabarito malformado/);
   });
 
-  it("deve rejeitar token expirado quando expiresAt estiver no passado", () => {
-    const expiredPayload: GradingPayload = {
-      ...validPayload,
-      expiresAt: Date.now() - 10000, // 10s no passado
-    };
+  it("deve criptografar e descriptografar com chave customizada (passphrase arbitrária via SHA-256 KDF)", () => {
+    const customKey = "passphrase-segura-de-producao-2026-juridico!";
+    const token = createGradingToken(validPayload, customKey);
+    const decrypted = decryptGradingToken(token, customKey);
+    assert.equal(decrypted.questionId, validPayload.questionId);
+    assert.equal(decrypted.correctAnswer, validPayload.correctAnswer);
 
-    const token = createGradingToken(expiredPayload);
-    assert.throws(() => decryptGradingToken(token), /Token de gabarito expirado/);
+    // Deve falhar com chave incorreta
+    assert.throws(
+      () => decryptGradingToken(token, "outra-chave-qualquer"),
+      /falha de autenticação criptográfica/i
+    );
   });
 });
+

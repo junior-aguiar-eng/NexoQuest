@@ -101,11 +101,25 @@ export class MaterialRepository {
    */
   public searchSections(query: string, options: SearchOptions = {}): SectionSearchResult[] {
     const limit = Math.min(options.limit ?? 10, 50);
-    const cleanedQuery = query.trim().replace(/['"]/g, "");
+    const trimmed = query.trim();
 
-    if (!cleanedQuery) {
+    if (!trimmed) {
       return [];
     }
+
+    // Extrai tokens válidos (suportando Unicode / acentuação em português)
+    const tokens = trimmed
+      .replace(/[^\p{L}\p{N}]+/gu, " ")
+      .trim()
+      .split(/\s+/)
+      .filter((t) => t.length > 0);
+
+    if (tokens.length === 0) {
+      return [];
+    }
+
+    // Monta query FTS5 estruturada segura (ex: "negocio"* AND "juridico"*)
+    const ftsQuery = tokens.map((t) => `"${t}"*`).join(" AND ");
 
     let sql = `
       SELECT 
@@ -124,7 +138,7 @@ export class MaterialRepository {
       JOIN materials m ON m.id = fts.material_id
       WHERE sections_fts MATCH ?
     `;
-    const params: (string | number)[] = [cleanedQuery];
+    const params: (string | number)[] = [ftsQuery];
 
     if (options.discipline) {
       sql += " AND m.discipline = ?";
@@ -155,26 +169,31 @@ export class MaterialRepository {
         lineEnd: Number(r.line_end),
       }));
     } catch {
-      // Se query FTS5 tiver sintaxe especial, faz fallback com termo entre aspas
-      const fallbackParams: (string | number)[] = [`"${cleanedQuery}"`];
+      // Fallback: busca exata pela string limpa
+      const fallbackQuery = `"${tokens.join(" ")}"`;
+      const fallbackParams: (string | number)[] = [fallbackQuery];
       if (options.discipline) fallbackParams.push(options.discipline);
       if (options.materialId) fallbackParams.push(options.materialId);
       fallbackParams.push(limit);
 
-      const rows = this.db.prepare(sql).all(...fallbackParams) as Record<string, unknown>[];
+      try {
+        const rows = this.db.prepare(sql).all(...fallbackParams) as Record<string, unknown>[];
 
-      return rows.map((r) => ({
-        materialId: String(r.material_id),
-        sectionId: String(r.section_id),
-        materialTitle: String(r.material_title),
-        discipline: String(r.discipline),
-        point: String(r.point),
-        headingPath: String(r.heading_path),
-        title: String(r.title),
-        content: String(r.content),
-        lineStart: Number(r.line_start),
-        lineEnd: Number(r.line_end),
-      }));
+        return rows.map((r) => ({
+          materialId: String(r.material_id),
+          sectionId: String(r.section_id),
+          materialTitle: String(r.material_title),
+          discipline: String(r.discipline),
+          point: String(r.point),
+          headingPath: String(r.heading_path),
+          title: String(r.title),
+          content: String(r.content),
+          lineStart: Number(r.line_start),
+          lineEnd: Number(r.line_end),
+        }));
+      } catch {
+        return [];
+      }
     }
   }
 

@@ -7,6 +7,30 @@ e este projeto adere ao [Versionamento Semântico](https://semver.org/lang/pt-BR
 
 ---
 
+## [1.0.1] - 2026-09-04
+
+### 🛡️ Auditoria de Engenharia Sênior & Hardening Integral
+
+#### Corrigido & Aprimorado
+* **Hidratação Dinâmica e Ciclo de Correção Stateless no Widget (`view/src/`)**:
+  * Integração do listener `app.ontoolresult` no `QuizApp.tsx` para carregar `QuestionPublic[]` diretamente a partir de chamadas `quiz_render`.
+  * Implementação da chamada remota `app.callServerTool("quiz_grade_answer", ...)` no Zustand store (`quiz-ui-store.ts`), garantindo que o gabarito protegido em `opaqueGradingToken` seja corrigido deterministicamente sem necessidade de pré-exposição de respostas no cliente.
+  * Desacoplamento de `CorrectionPanel.tsx` e `QuestionPlayer.tsx` para consumir o objeto `QuestionCorrection` retornado pelo servidor.
+* **Expurgo de Resíduos do Upstream**:
+  * Remoção física completa do diretório legado `templates/` contendo 8.5MB de minigames do QuizHP.
+  * Exclusão de scripts obsoletos de banco externo (`scripts/update-supabase-controls.mjs`, `scripts/fix-controls-format.mjs`).
+  * Reconstrução de `scripts/build-worker-bundle.mjs` e `src/worker-bundle.ts`, reduzindo o bundle estático de **8.51 MB** para **443 KB**.
+* **Hardening Criptográfico (`src/core/security/crypto-token.ts`)**:
+  * Derivação padronizada de chave de 256 bits (`deriveAesKey`) com SHA-256 KDF para suporte uniforme a qualquer string de segredo/passphrase.
+  * Otimização do fluxo de cifragem AES-256-GCM com manipulação direta de Buffers e codificação `base64url`.
+* **Busca Lexical no SQLite FTS5 (`src/core/library/material-search.ts`)**:
+  * Tokenização Unicode avançada e formatação estruturada com operadores `AND` e curingas `*`, conferindo alta tolerância a pontuações de artigos e dispositivos legais.
+* **Alinhamento de Contratos & Qualidade**:
+  * Alinhamento estrito de `scripts/verify-e2e.ts` com `QuestionInternalSchema`.
+  * Adição de novos testes unitários para a chave customizada via KDF e para o fluxo de hidratação de `QuestionPublic` e correção remota no widget (totalizando 58 testes automatizados).
+
+---
+
 ## [1.0.0] - 2026-09-03
 
 ### 🎉 Lançamento Inicial — Fundação NexoQuiz V1

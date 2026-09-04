@@ -17,24 +17,32 @@ export interface GradingPayload {
 
 // Chave padrão gerada para o ciclo do servidor caso não haja variável de ambiente
 const DEFAULT_SECRET_KEY =
-  process.env.NEXOQUIZ_SECRET_KEY ||
-  crypto.createHash("sha256").update("nexoquiz-stateless-aes-256-gcm-secret-key-v1").digest("hex");
+  process.env.NEXOQUIZ_SECRET_KEY || "nexoquiz-stateless-aes-256-gcm-secret-key-v1";
+
+/**
+ * Deriva uma chave de 256 bits (32 bytes) segura a partir de qualquer string/segredo
+ */
+function deriveAesKey(secret: string): Buffer {
+  return crypto.createHash("sha256").update(secret, "utf8").digest();
+}
 
 /**
  * Criptografa o gabarito e as justificativas em um opaqueGradingToken seguro (AES-256-GCM)
  */
 export function createGradingToken(
   payload: GradingPayload,
-  secretKeyHex: string = DEFAULT_SECRET_KEY
+  secretKey: string = DEFAULT_SECRET_KEY
 ): string {
-  const key = Buffer.from(secretKeyHex.padEnd(64, "0").slice(0, 64), "hex");
+  const key = deriveAesKey(secretKey);
   const iv = crypto.randomBytes(12); // 96-bit IV recomendado para GCM
 
   const cipher = crypto.createCipheriv("aes-256-gcm", key, iv);
   const jsonPayload = JSON.stringify(payload);
 
-  let encrypted = cipher.update(jsonPayload, "utf8", "base64");
-  encrypted += cipher.final("base64");
+  const encrypted = Buffer.concat([
+    cipher.update(jsonPayload, "utf8"),
+    cipher.final(),
+  ]);
 
   const authTag = cipher.getAuthTag();
 
@@ -42,7 +50,7 @@ export function createGradingToken(
   const token = [
     iv.toString("base64url"),
     authTag.toString("base64url"),
-    Buffer.from(encrypted, "base64").toString("base64url"),
+    encrypted.toString("base64url"),
   ].join(".");
 
   return token;
@@ -53,7 +61,7 @@ export function createGradingToken(
  */
 export function decryptGradingToken(
   token: string,
-  secretKeyHex: string = DEFAULT_SECRET_KEY
+  secretKey: string = DEFAULT_SECRET_KEY
 ): GradingPayload {
   const parts = token.split(".");
   if (parts.length !== 3) {
@@ -61,7 +69,7 @@ export function decryptGradingToken(
   }
 
   const [ivB64, authTagB64, encryptedB64] = parts;
-  const key = Buffer.from(secretKeyHex.padEnd(64, "0").slice(0, 64), "hex");
+  const key = deriveAesKey(secretKey);
   const iv = Buffer.from(ivB64, "base64url");
   const authTag = Buffer.from(authTagB64, "base64url");
   const encrypted = Buffer.from(encryptedB64, "base64url");
@@ -75,8 +83,11 @@ export function decryptGradingToken(
 
   let decrypted: string;
   try {
-    decrypted = decipher.update(encrypted.toString("base64"), "base64", "utf8");
-    decrypted += decipher.final("utf8");
+    const decryptedBuf = Buffer.concat([
+      decipher.update(encrypted),
+      decipher.final(),
+    ]);
+    decrypted = decryptedBuf.toString("utf8");
   } catch {
     throw new Error("Token de gabarito inválido ou violado (falha de autenticação criptográfica).");
   }
@@ -89,3 +100,4 @@ export function decryptGradingToken(
 
   return payload;
 }
+

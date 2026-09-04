@@ -21,8 +21,7 @@
     }
   },
   "files": [
-    "dist/",
-    "templates/"
+    "dist/"
   ],
   "scripts": {
     "build": "tsc && vite build --config view/vite.config.ts",

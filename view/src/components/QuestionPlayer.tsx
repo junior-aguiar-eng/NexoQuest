@@ -34,6 +34,8 @@ export const QuestionPlayer: React.FC = () => {
   const canNext = selectCanNavigateNext(store);
   const canPrev = selectCanNavigatePrev(store);
 
+  const currentCorrection = currentQuestion ? store.corrections[currentQuestion.id] : undefined;
+
   const { formattedTime, elapsedMs, resetTimer } = useTimer(!store.isCompleted);
 
   const handleSelectAnswer = (label: "A" | "B" | "C" | "D" | "E") => {
@@ -101,9 +103,11 @@ export const QuestionPlayer: React.FC = () => {
     );
   }
 
-  const isCorrect = currentAnswer?.selectedAnswer === currentQuestion.correctAnswer;
   const isStudyMode = store.mode === "study";
   const isLastQuestion = progress.current === progress.total;
+  const revealedCorrectAnswer = isStudyMode && isConfirmed
+    ? (currentCorrection?.correctAnswer || currentQuestion.correctAnswer)
+    : undefined;
 
   return (
     <div className="w-full h-full min-h-screen bg-neutral-50 dark:bg-neutral-950 text-neutral-900 dark:text-neutral-100 flex flex-col items-center p-4 sm:p-6 overflow-y-auto">
@@ -160,7 +164,7 @@ export const QuestionPlayer: React.FC = () => {
             <h1 className="text-base sm:text-lg font-semibold text-neutral-800 dark:text-neutral-200">
               {currentQuestion.point}
             </h1>
-            {isStudyMode && (
+            {isStudyMode && currentQuestion.umtTitle && (
               <div className="text-xs text-sky-600 dark:text-sky-400 font-medium">
                 UMT: {currentQuestion.umtTitle}
               </div>
@@ -179,17 +183,23 @@ export const QuestionPlayer: React.FC = () => {
         <main className="bg-white dark:bg-neutral-900 border border-neutral-200 dark:border-neutral-800 rounded-xl p-6 sm:p-7 shadow-xs flex flex-col gap-5">
           
           {/* Tag de Formato / Dificuldade no Modo Estudo */}
-          {isStudyMode && (
+          {isStudyMode && (currentQuestion.format || currentQuestion.difficulty || currentQuestion.focus) && (
             <div className="flex items-center gap-2 text-[11px] font-mono text-neutral-400 dark:text-neutral-500">
-              <span className="uppercase bg-neutral-100 dark:bg-neutral-800 px-2 py-0.5 rounded border border-neutral-200 dark:border-neutral-700/60">
-                {currentQuestion.format}
-              </span>
-              <span className="uppercase bg-neutral-100 dark:bg-neutral-800 px-2 py-0.5 rounded border border-neutral-200 dark:border-neutral-700/60">
-                {currentQuestion.difficulty}
-              </span>
-              <span className="uppercase bg-neutral-100 dark:bg-neutral-800 px-2 py-0.5 rounded border border-neutral-200 dark:border-neutral-700/60">
-                {currentQuestion.focus}
-              </span>
+              {currentQuestion.format && (
+                <span className="uppercase bg-neutral-100 dark:bg-neutral-800 px-2 py-0.5 rounded border border-neutral-200 dark:border-neutral-700/60">
+                  {currentQuestion.format}
+                </span>
+              )}
+              {currentQuestion.difficulty && (
+                <span className="uppercase bg-neutral-100 dark:bg-neutral-800 px-2 py-0.5 rounded border border-neutral-200 dark:border-neutral-700/60">
+                  {currentQuestion.difficulty}
+                </span>
+              )}
+              {currentQuestion.focus && (
+                <span className="uppercase bg-neutral-100 dark:bg-neutral-800 px-2 py-0.5 rounded border border-neutral-200 dark:border-neutral-700/60">
+                  {currentQuestion.focus}
+                </span>
+              )}
             </div>
           )}
 
@@ -221,7 +231,7 @@ export const QuestionPlayer: React.FC = () => {
             alternatives={currentQuestion.alternatives}
             selectedAnswer={currentAnswer?.selectedAnswer || null}
             isConfirmed={isStudyMode ? isConfirmed : false}
-            correctAnswer={isStudyMode && isConfirmed ? currentQuestion.correctAnswer : undefined}
+            correctAnswer={revealedCorrectAnswer}
             onSelectAnswer={handleSelectAnswer}
           />
 
@@ -287,6 +297,7 @@ export const QuestionPlayer: React.FC = () => {
             <CorrectionPanel
               question={currentQuestion}
               selectedAnswer={currentAnswer.selectedAnswer}
+              correction={currentCorrection}
               onNext={handleNext}
               isLastQuestion={isLastQuestion}
             />

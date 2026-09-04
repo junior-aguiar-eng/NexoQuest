@@ -56,4 +56,6 @@ Este documento registra o estado factual das fases de engenharia do NexoQuiz.
 - [x] **Fase 16** — Hardening do MCP e do widget (`QuizErrorBoundary`, payload limits 512KB, rate limiting, sanitização e zero leakage)
 - [x] **Fase 17** — Integração real no ChatGPT (`CHATGPT_INTEGRATION.md`, prompt canônico do host, script E2E de validação e entrega V1)
 - [x] **Extensões v1.0.0** — Terminal TUI Offline (`npm run cli`), Ingestão de Apostilas (`scripts/import-nexojuris.ts` + Skill), Padrões de Comunidade (Templates, Conduta, Segurança, Contribuição) e Zero Vulnerabilidades.
+- [x] **Auditoria & Hardening Sênior (v1.0.1)** — Hidratação de `QuestionPublic` via `app.ontoolresult`, ciclo de correção stateless integrado no widget (`quiz_grade_answer`), expurgo físico total dos templates legados de 8.5MB, KDF seguro SHA-256 no `crypto-token.ts`, sanitização FTS5 Unicode e validação 100% de testes e build.
+
 

@@ -30,15 +30,18 @@ export const selectProgress = (state: QuizUiState) => {
 export const selectSessionStatistics = (state: QuizUiState) => {
   const items = state.questions.map((q) => {
     const ans = state.answers[q.id];
+    const corr = state.corrections[q.id];
+    const isCorrect = corr ? corr.isCorrect : (q.correctAnswer ? ans?.selectedAnswer === q.correctAnswer : false);
+
     return {
       questionId: q.id,
-      isCorrect: ans?.selectedAnswer === q.correctAnswer,
+      isCorrect,
       selectedAnswer: ans?.selectedAnswer || "",
       elapsedTimeMs: ans?.elapsedTimeMs || 0,
       confidence: ans?.confidence,
       classification: {
-        difficulty: q.difficulty,
-        focus: q.focus,
+        difficulty: q.difficulty || "medium",
+        focus: q.focus || "statute",
       },
       isFlaggedForReview: Boolean(state.reviewFlags[q.id]),
     };

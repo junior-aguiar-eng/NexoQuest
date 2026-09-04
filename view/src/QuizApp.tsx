@@ -1,4 +1,4 @@
-import { useState, useCallback, useEffect } from "react";
+import { useState, useCallback, useEffect, useRef } from "react";
 import {
   useApp,
   applyHostStyleVariables,
@@ -8,6 +8,7 @@ import {
 import type {
   McpUiHostContext,
   McpUiDisplayMode,
+  App,
 } from "@modelcontextprotocol/ext-apps";
 import { QuestionPlayer } from "./components/QuestionPlayer";
 import { QuizErrorBoundary } from "./components/QuizErrorBoundary";
@@ -15,33 +16,81 @@ import { HubHeader, type ActiveTab } from "./components/HubHeader";
 import { SimuladosTab } from "./components/SimuladosTab";
 import { LibraryTab } from "./components/LibraryTab";
 import { MetricsTab } from "./components/MetricsTab";
-import { useQuizUiStore } from "./store/quiz-ui-store";
+import { useQuizUiStore, type GradeHandler } from "./store/quiz-ui-store";
 import type { PresetQuiz } from "./fixtures/allDisciplineQuestions";
 import type { QuizMode } from "../../src/core/domain/primitives";
+import type { QuestionPublic } from "../../src/core/domain/question";
+import type { QuestionCorrection } from "../../src/core/domain/correction";
 
 export function QuizApp() {
   const [hostContext, setHostContext] = useState<McpUiHostContext | undefined>();
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
+  const appRef = useRef<App | null>(null);
   
   // Hub Local State
   const [activeTab, setActiveTab] = useState<ActiveTab>("simulados");
   const [activeQuizTitle, setActiveQuizTitle] = useState<string | null>(null);
   const setQuestions = useQuizUiStore((s) => s.setQuestions);
+  const setPublicQuestions = useQuizUiStore((s) => s.setPublicQuestions);
+  const setGradeHandler = useQuizUiStore((s) => s.setGradeHandler);
 
   const isInsideHostApp = typeof window !== "undefined" && Boolean(window.openai?.widgetState);
 
   const onAppCreated = useCallback(
-    (app: import("@modelcontextprotocol/ext-apps").App) => {
+    (app: App) => {
+      appRef.current = app;
+
+      // 1. Registra o manipulador de graduação remota via MCP Tool
+      const gradeHandler: GradeHandler = async (input) => {
+        try {
+          const res = await app.callServerTool({
+            name: "quiz_grade_answer",
+            arguments: {
+              opaqueGradingToken: input.opaqueGradingToken,
+              selectedAnswer: input.selectedAnswer,
+              confidence: input.confidence,
+              elapsedTimeMs: input.elapsedTimeMs,
+            },
+          });
+
+          if (!res.isError && (res.structuredContent as any)?.correction) {
+            return (res.structuredContent as any).correction as QuestionCorrection;
+          }
+        } catch (err) {
+          console.warn("[NexoQuiz] Erro na chamada quiz_grade_answer via MCP:", err);
+        }
+        return null;
+      };
+
+      setGradeHandler(gradeHandler);
+
+      // 2. Intercepta resultados de ferramentas (ex: quiz_render)
       app.ontoolresult = (params) => {
         if (params.isError) {
           const text = params.content
             ?.filter((c): c is { type: "text"; text: string } => c.type === "text")
             .map((c) => c.text)
-            .join(" ") || "Tool execution failed";
+            .join(" ") || "Falha na execução da ferramenta.";
           setErrorMessage(text);
+          return;
+        }
+
+        // Extrai questões públicas de structuredContent ou _meta.quizData
+        const structured = params.structuredContent as any;
+        const metaQuiz = (params._meta as any)?.quizData;
+        const questions = (structured?.questions || metaQuiz?.questions) as QuestionPublic[] | undefined;
+        const mode = (structured?.mode || metaQuiz?.mode || "study") as QuizMode;
+        const title = (structured?.title || metaQuiz?.title) as string | undefined;
+
+        if (Array.isArray(questions) && questions.length > 0) {
+          setPublicQuestions(questions, mode, title);
+          if (title) {
+            setActiveQuizTitle(title);
+          }
         }
       };
 
+      // 3. Sincroniza contexto do Host
       app.onhostcontextchanged = (ctx) => {
         setHostContext((prev) => ({ ...prev, ...ctx }));
         if (ctx.styles?.variables) applyHostStyleVariables(ctx.styles.variables);
@@ -49,7 +98,7 @@ export function QuizApp() {
         if (ctx.theme) applyDocumentTheme(ctx.theme);
       };
     },
-    []
+    [setPublicQuestions, setGradeHandler]
   );
 
   const { error } = useApp({
@@ -73,7 +122,7 @@ export function QuizApp() {
   }, [hostContext?.theme]);
 
   const handleStartQuiz = (quiz: PresetQuiz, mode: QuizMode) => {
-    setQuestions(quiz.questions, mode);
+    setQuestions(quiz.questions, mode, quiz.title);
     setActiveQuizTitle(quiz.title);
   };
 

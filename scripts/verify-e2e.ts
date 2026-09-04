@@ -52,14 +52,23 @@ async function runE2EVerification() {
   console.log("\n▶ 4. Cifragem e Proteção do Gabarito (AES-256-GCM)...");
   const internalQuestion: QuestionInternal = {
     id: "q-e2e-1",
+    quizId: "quiz-e2e-session-001",
     sequence: 1,
-    format: "case_narrative",
-    difficulty: "hard",
-    focus: "jurisprudence",
-    header: {
+    blockNumber: 1,
+    point: {
+      id: "calendario-processual",
+      title: "Calendário Processual",
+      order: 1,
+    },
+    umt: {
+      id: "umt-art-191",
+      title: "Art. 191 do CPC - Calendário Processual",
+    },
+    classification: {
       discipline: "processo-civil",
-      point: "calendario-processual",
-      totalQuestions: 1,
+      format: "case_narrative",
+      difficulty: "hard",
+      focus: "jurisprudence",
     },
     content: {
       stem: "Durante audiência de saneamento, as partes e o magistrado fixaram de comum acordo o calendário processual para a fase instrutória. No entanto, o autor pretende antecipar a perícia sem concordância do réu...",
@@ -71,16 +80,12 @@ async function runE2EVerification() {
         { label: "E", text: "A fixação de calendário depende de homologação pelo Presidente do Tribunal." },
       ],
     },
-    interaction: {
-      mode: "study",
-      allowConfidence: true,
-      allowReview: true,
-    },
     answerKey: {
       correctAnswer: "B",
       legalReasoning: "O art. 191 do CPC estabelece que o calendário vincula as partes e o juiz, e os prazos somente se modificam em casos excepcionais, devidamente justificados.",
       legalBasis: "Art. 191 do CPC",
       precedents: ["STJ, REsp 1.800.000"],
+      doctrine: ["Didier Jr."],
       diagnosis: "O candidato errou ao presumir que os prazos dependem de nova intimação.",
       distractorAnalysis: {
         A: "Incorreta, vincula tanto os litigantes quanto o próprio órgão jurisdicional.",
@@ -89,7 +94,9 @@ async function runE2EVerification() {
         D: "Incorreta, os prazos correm independentemente de intimação.",
         E: "Incorreta, dispensa qualquer homologação externa.",
       },
+      confidenceScore: 0.95,
     },
+    sourceTrace: ["library/_fixtures/processo-civil-mege.md#secao-1"],
   };
 
   const token = createGradingToken({
