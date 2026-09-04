@@ -29,6 +29,9 @@ e este projeto adere ao [Versionamento Semântico](https://semver.org/lang/pt-BR
   * `typescript`: `5.7.2` ➔ `^5.9.3`
   * `vite-plugin-singlefile`: `2.0.3` ➔ `^2.3.3`
   * `@vitejs/plugin-react`: `4.3.4` ➔ `^4.7.0`
+* **Expurgo Consistente de Legados**:
+  * Exclusão física completa do diretório `landing/` (páginas HTML de marketing legado, política de privacidade da Hunch AI e minigames residuais).
+  * Consolidação definitiva do portal VitePress (`docs/`) e visual React (`view/`) como fontes únicas de documentação e runtime.
 * **Auditoria de Segurança**:
   * Resolução de todas as vulnerabilidades transitivas; 0 vulnerabilidades detectadas via `npm audit`.
   * Validação com 100% de sucesso em testes (57 testes passando), compilação TypeScript estrita e builds de produção.
