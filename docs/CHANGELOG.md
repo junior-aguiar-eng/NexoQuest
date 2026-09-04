@@ -7,6 +7,34 @@ e este projeto adere ao [Versionamento Semântico](https://semver.org/lang/pt-BR
 
 ---
 
+## [1.0.2] - 2026-09-04
+
+### 📦 Modernização e Atualização Geral de Dependências
+
+#### Atualizado
+* **Dependências de Produção (`dependencies`)**:
+  * `@modelcontextprotocol/ext-apps`: `1.2.2` ➔ `^1.7.5`
+  * `@modelcontextprotocol/sdk`: `1.27.1` ➔ `^1.30.0`
+  * `express`: mantido em `^5.2.1` estável
+  * `express-rate-limit`: `8.3.1` ➔ `^8.7.0`
+  * `zod`: atualizado para a versão mais recente e estável `^3.25.76`
+* **Dependências de Desenvolvimento (`devDependencies`)**:
+  * `react` e `react-dom`: `19.0.0` ➔ `^19.2.8`
+  * `@types/react` e `@types/react-dom`: `19.0.0` ➔ `^19.2.18` / `^19.2.7`
+  * `@types/express`: `4.17.21` ➔ `^5.0.6` (alinhado ao Express 5)
+  * `@types/node`: `22.10.5` ➔ `^22.20.1` (Node.js 22 LTS estável)
+  * `tailwindcss` e `@tailwindcss/vite`: `4.0.0` ➔ `^4.3.3`
+  * `zustand`: `5.0.3` ➔ `^5.0.15`
+  * `tsx`: `4.19.2` ➔ `^4.23.13`
+  * `typescript`: `5.7.2` ➔ `^5.9.3`
+  * `vite-plugin-singlefile`: `2.0.3` ➔ `^2.3.3`
+  * `@vitejs/plugin-react`: `4.3.4` ➔ `^4.7.0`
+* **Auditoria de Segurança**:
+  * Resolução de todas as vulnerabilidades transitivas; 0 vulnerabilidades detectadas via `npm audit`.
+  * Validação com 100% de sucesso em testes (57 testes passando), compilação TypeScript estrita e builds de produção.
+
+---
+
 ## [1.0.1] - 2026-09-04
 
 ### 🛡️ Auditoria de Engenharia Sênior & Hardening Integral
